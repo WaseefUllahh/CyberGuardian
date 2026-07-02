@@ -34,12 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (mounted) {
         setState(() => _loading = false);
         // Push replacement using MaterialPageRoute to MainNavigationScreen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationScreen(),
-          ),
-        );
+        Navigator.pushReplacementNamed(context, '/home');
       }
     });
   }

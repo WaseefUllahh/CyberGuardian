@@ -6,10 +6,9 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   void _logout(BuildContext context) {
-    // Clear the entire stack and go back to login screen using MaterialPageRoute
-    Navigator.pushAndRemoveUntil(
+    Navigator.pushNamedAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      '/login',
       (route) => false,
     );
   }

@@ -8,62 +8,65 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Greeting Header ──
-              _buildGreetingHeader(),
-              const SizedBox(height: 20),
+      drawer: _buildDrawer(context),
+      body: Builder(
+        builder: (ctx) => SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Greeting Header ──
+                _buildGreetingHeader(ctx),
+                const SizedBox(height: 20),
 
-              // ── Security Status Card ──
-              _buildSecurityStatusCard(),
-              const SizedBox(height: 28),
+                // ── Security Status Card ──
+                _buildSecurityStatusCard(),
+                const SizedBox(height: 28),
 
-              // ── Quick Actions ──
-              _buildSectionTitle('Quick Actions', 'See all'),
-              const SizedBox(height: 14),
-              _buildQuickActions(),
-              const SizedBox(height: 28),
+                // ── Quick Actions ──
+                _buildSectionTitle('Quick Actions', 'See all'),
+                const SizedBox(height: 14),
+                _buildQuickActions(),
+                const SizedBox(height: 28),
 
-              // ── Recent Activity ──
-              _buildSectionTitle('Recent Activity', 'View all'),
-              const SizedBox(height: 14),
-              _buildRecentActivity(),
-              const SizedBox(height: 28),
+                // ── Recent Activity ──
+                _buildSectionTitle('Recent Activity', 'View all'),
+                const SizedBox(height: 14),
+                _buildRecentActivity(),
+                const SizedBox(height: 28),
 
-              // ── Cyber Awareness ──
-              const Text('Cyber Awareness',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: dark)),
-              const SizedBox(height: 14),
-              _buildCyberAwareness(),
-              const SizedBox(height: 28),
+                // ── Cyber Awareness ──
+                const Text('Cyber Awareness',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: dark)),
+                const SizedBox(height: 14),
+                _buildCyberAwareness(),
+                const SizedBox(height: 28),
 
-              // ── Security Statistics ──
-              const Text('Security Statistics',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: dark)),
-              const SizedBox(height: 14),
-              _buildSecurityStatistics(),
-              const SizedBox(height: 28),
+                // ── Security Statistics ──
+                const Text('Security Statistics',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: dark)),
+                const SizedBox(height: 14),
+                _buildSecurityStatistics(),
+                const SizedBox(height: 28),
 
-              // ── Daily Security Tip ──
-              _buildDailyTip(),
-              const SizedBox(height: 28),
+                // ── Daily Security Tip ──
+                _buildDailyTip(),
+                const SizedBox(height: 28),
 
-              // ── Your Progress ──
-              _buildSectionTitle('Your Progress', 'Details'),
-              const SizedBox(height: 14),
-              _buildProgressCard(),
-              const SizedBox(height: 28),
+                // ── Your Progress ──
+                _buildSectionTitle('Your Progress', 'Details'),
+                const SizedBox(height: 14),
+                _buildProgressCard(),
+                const SizedBox(height: 28),
 
-              // ── Threat Digest ──
-              _buildSectionTitle('Threat Digest', 'Updated today', isLink: false),
-              const SizedBox(height: 14),
-              _buildThreatDigest(),
-              const SizedBox(height: 24),
-            ],
+                // ── Threat Digest ──
+                _buildSectionTitle('Threat Digest', 'Updated today', isLink: false),
+                const SizedBox(height: 14),
+                _buildThreatDigest(),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),
@@ -71,9 +74,15 @@ class DashboardScreen extends StatelessWidget {
   }
 
   // ─── Greeting Header ──────────────────────────────────────────────────────
-  Widget _buildGreetingHeader() {
+  Widget _buildGreetingHeader(BuildContext context) {
     return Row(
       children: [
+        // Hamburger icon — opens the Drawer
+        IconButton(
+          icon: const Icon(Icons.menu_rounded, color: dark, size: 26),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Open menu',
+        ),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,8 +90,8 @@ class DashboardScreen extends StatelessWidget {
               const Text('Good Morning,',
                   style: TextStyle(fontSize: 14, color: grey)),
               const SizedBox(height: 2),
-              const Text('Wajahat 👋',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: dark)),
+              const Text('Waseef Ullah 👋',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: dark)),
               const SizedBox(height: 2),
               const Text('Stay safe online today',
                   style: TextStyle(fontSize: 13, color: grey)),
@@ -223,56 +232,43 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // ─── Quick Actions ────────────────────────────────────────────────────────
+  // ─── Quick Actions (GridView) ─────────────────────────────────────────────
   Widget _buildQuickActions() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                icon: Icons.link,
-                iconColor: green,
-                bgColor: const Color(0xFFE8F5E9),
-                title: 'Scan URL',
-                subtitle: 'Check link safety',
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _QuickActionCard(
-                icon: Icons.chat_bubble_outline,
-                iconColor: const Color(0xFF1565C0),
-                bgColor: const Color(0xFFE3F2FD),
-                title: 'Analyze Message',
-                subtitle: 'Detect phishing text',
-              ),
-            ),
-          ],
+    return GridView.count(
+      crossAxisCount: 2,
+      crossAxisSpacing: 14,
+      mainAxisSpacing: 14,
+      childAspectRatio: 1.05,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: const [
+        _QuickActionCard(
+          icon: Icons.link,
+          iconColor: green,
+          bgColor: Color(0xFFE8F5E9),
+          title: 'Scan URL',
+          subtitle: 'Check link safety',
         ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                icon: Icons.flag_outlined,
-                iconColor: const Color(0xFFE65100),
-                bgColor: const Color(0xFFFBE9E7),
-                title: 'Report Scam',
-                subtitle: 'Submit suspicious content',
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _QuickActionCard(
-                icon: Icons.vpn_key_outlined,
-                iconColor: const Color(0xFF7B1FA2),
-                bgColor: const Color(0xFFF3E5F5),
-                title: 'Password Checker',
-                subtitle: 'Test password strength',
-              ),
-            ),
-          ],
+        _QuickActionCard(
+          icon: Icons.chat_bubble_outline,
+          iconColor: Color(0xFF1565C0),
+          bgColor: Color(0xFFE3F2FD),
+          title: 'Analyze SMS',
+          subtitle: 'Detect phishing text',
+        ),
+        _QuickActionCard(
+          icon: Icons.flag_outlined,
+          iconColor: Color(0xFFE65100),
+          bgColor: Color(0xFFFBE9E7),
+          title: 'Report Scam',
+          subtitle: 'Submit suspicious content',
+        ),
+        _QuickActionCard(
+          icon: Icons.vpn_key_outlined,
+          iconColor: Color(0xFF7B1FA2),
+          bgColor: Color(0xFFF3E5F5),
+          title: 'Password Check',
+          subtitle: 'Test password strength',
         ),
       ],
     );
@@ -622,6 +618,144 @@ class DashboardScreen extends StatelessWidget {
           severityColor: const Color(0xFFE65100),
         ),
       ],
+    );
+  }
+
+  // ─── Drawer ───────────────────────────────────────────────────────────────
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: Column(
+        children: [
+          // ── Drawer Header ──
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 52, 20, 28),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(
+                  'assets/images/cyberguardian_logo.png',
+                  width: 72,
+                  height: 72,
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Wajahat',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'wajahat@email.com',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    '🛡️  Protected',
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Navigation Items ──
+          const SizedBox(height: 8),
+          _drawerNavItem(
+            context,
+            icon: Icons.home_rounded,
+            label: 'Home',
+            onTap: () => Navigator.pop(context), // just close drawer
+          ),
+          _drawerNavItem(
+            context,
+            icon: Icons.document_scanner_outlined,
+            label: 'Scanner',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/scanner');
+            },
+          ),
+          _drawerNavItem(
+            context,
+            icon: Icons.description_outlined,
+            label: 'Reports',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/reports');
+            },
+          ),
+          _drawerNavItem(
+            context,
+            icon: Icons.person_outline,
+            label: 'Profile',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/profile');
+            },
+          ),
+
+          const Spacer(),
+          const Divider(indent: 16, endIndent: 16),
+
+          // ── Logout ──
+          _drawerNavItem(
+            context,
+            icon: Icons.logout_rounded,
+            label: 'Logout',
+            iconColor: Colors.red,
+            labelColor: Colors.red,
+            onTap: () {
+              Navigator.pushNamedAndRemoveUntil(
+                context, '/login', (route) => false);
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _drawerNavItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color iconColor = dark,
+    Color labelColor = dark,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: iconColor, size: 24),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: labelColor,
+        ),
+      ),
+      trailing: Icon(Icons.chevron_right, color: grey.withOpacity(0.5), size: 20),
+      onTap: onTap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      horizontalTitleGap: 8,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     );
   }
 }

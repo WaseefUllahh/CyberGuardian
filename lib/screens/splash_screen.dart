@@ -17,12 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // 3 seconds delay before transitioning to Login Screen
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
-        );
+        Navigator.pushReplacementNamed(context, '/login');
       }
     });
   }

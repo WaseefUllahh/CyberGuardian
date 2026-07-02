@@ -31,12 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         setState(() => _loading = false);
         // Push replacement using MaterialPageRoute
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationScreen(),
-          ),
-        );
+        Navigator.pushReplacementNamed(context, '/home');
       }
     });
   }
@@ -96,12 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       actionLabel: 'Sign Up',
                       onTap: () {
                         // Push to SignUpScreen (user can pop back)
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignUpScreen(),
-                          ),
-                        );
+                      Navigator.pushNamed(context, '/signup');
                       },
                     ),
                   ],
