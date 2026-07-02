@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/auth_utils.dart';
+import '../widgets/dashboard_widgets.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -242,28 +243,28 @@ class DashboardScreen extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: const [
-        _QuickActionCard(
+        QuickActionCard(
           icon: Icons.link,
           iconColor: green,
           bgColor: Color(0xFFE8F5E9),
           title: 'Scan URL',
           subtitle: 'Check link safety',
         ),
-        _QuickActionCard(
+        QuickActionCard(
           icon: Icons.chat_bubble_outline,
           iconColor: Color(0xFF1565C0),
           bgColor: Color(0xFFE3F2FD),
           title: 'Analyze SMS',
           subtitle: 'Detect phishing text',
         ),
-        _QuickActionCard(
+        QuickActionCard(
           icon: Icons.flag_outlined,
           iconColor: Color(0xFFE65100),
           bgColor: Color(0xFFFBE9E7),
           title: 'Report Scam',
           subtitle: 'Submit suspicious content',
         ),
-        _QuickActionCard(
+        QuickActionCard(
           icon: Icons.vpn_key_outlined,
           iconColor: Color(0xFF7B1FA2),
           bgColor: Color(0xFFF3E5F5),
@@ -277,7 +278,7 @@ class DashboardScreen extends StatelessWidget {
   // ─── Recent Activity ──────────────────────────────────────────────────────
   Widget _buildRecentActivity() {
     final items = [
-      _ActivityItem(
+      ActivityItemData(
         icon: Icons.link,
         iconColor: green,
         bgColor: const Color(0xFFE8F5E9),
@@ -286,7 +287,7 @@ class DashboardScreen extends StatelessWidget {
         status: 'Safe',
         statusColor: green,
       ),
-      _ActivityItem(
+      ActivityItemData(
         icon: Icons.warning_amber_rounded,
         iconColor: Colors.red,
         bgColor: const Color(0xFFFFEBEE),
@@ -295,7 +296,7 @@ class DashboardScreen extends StatelessWidget {
         status: 'Suspicious',
         statusColor: Colors.red,
       ),
-      _ActivityItem(
+      ActivityItemData(
         icon: Icons.link,
         iconColor: green,
         bgColor: const Color(0xFFE8F5E9),
@@ -363,7 +364,7 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _AwarenessCard(
+              child: AwarenessCard(
                 icon: Icons.no_encryption_outlined,
                 iconColor: green,
                 bgColor: const Color(0xFFE8F5E9),
@@ -373,7 +374,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: _AwarenessCard(
+              child: AwarenessCard(
                 icon: Icons.lock_outline,
                 iconColor: green,
                 bgColor: const Color(0xFFE8F5E9),
@@ -387,7 +388,7 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _AwarenessCard(
+              child: AwarenessCard(
                 icon: Icons.public,
                 iconColor: green,
                 bgColor: const Color(0xFFE8F5E9),
@@ -397,7 +398,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: _AwarenessCard(
+              child: AwarenessCard(
                 icon: Icons.account_balance_wallet_outlined,
                 iconColor: green,
                 bgColor: const Color(0xFFE8F5E9),
@@ -418,7 +419,7 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.search,
                 iconColor: const Color(0xFF1565C0),
                 bgColor: const Color(0xFFE3F2FD),
@@ -428,7 +429,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.check_circle_outline,
                 iconColor: green,
                 bgColor: const Color(0xFFE8F5E9),
@@ -442,7 +443,7 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.warning_amber_rounded,
                 iconColor: const Color(0xFFE65100),
                 bgColor: const Color(0xFFFBE9E7),
@@ -452,7 +453,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.send,
                 iconColor: Colors.red,
                 bgColor: const Color(0xFFFFEBEE),
@@ -557,13 +558,13 @@ class DashboardScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _ProgressBar(label: 'Phishing Awareness', value: 0.80, percent: '80%',
+          ProgressBar(label: 'Phishing Awareness', value: 0.80, percent: '80%',
               color: const Color(0xFFE65100)),
           const SizedBox(height: 18),
-          _ProgressBar(label: 'Password Security', value: 0.65, percent: '65%',
+          ProgressBar(label: 'Password Security', value: 0.65, percent: '65%',
               color: const Color(0xFF7B1FA2)),
           const SizedBox(height: 18),
-          _ProgressBar(label: 'Safe Browsing', value: 0.90, percent: '90%',
+          ProgressBar(label: 'Safe Browsing', value: 0.90, percent: '90%',
               color: green),
           const SizedBox(height: 20),
           const Divider(),
@@ -598,7 +599,7 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildThreatDigest() {
     return Column(
       children: [
-        _ThreatCard(
+        ThreatCard(
           icon: Icons.trending_up,
           iconColor: Colors.red,
           bgColor: const Color(0xFFFFEBEE),
@@ -608,7 +609,7 @@ class DashboardScreen extends StatelessWidget {
           severityColor: Colors.red,
         ),
         const SizedBox(height: 10),
-        _ThreatCard(
+        ThreatCard(
           icon: Icons.bar_chart,
           iconColor: const Color(0xFFE65100),
           bgColor: const Color(0xFFFBE9E7),
@@ -756,269 +757,6 @@ class DashboardScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       horizontalTitleGap: 8,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Private helper widgets
-// ═══════════════════════════════════════════════════════════════════════════════
-
-class _QuickActionCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor, bgColor;
-  final String title, subtitle;
-
-  const _QuickActionCard({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(height: 14),
-          Text(title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: dark)),
-          const SizedBox(height: 4),
-          Text(subtitle,
-              style: const TextStyle(color: grey, fontSize: 12)),
-        ],
-      ),
-    );
-  }
-}
-
-class _AwarenessCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor, bgColor;
-  final String title, subtitle;
-
-  const _AwarenessCard({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(height: 14),
-          Text(title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: dark)),
-          const SizedBox(height: 6),
-          Text(subtitle,
-              style: const TextStyle(color: grey, fontSize: 12, height: 1.4)),
-          const SizedBox(height: 10),
-          Text('Learn More',
-              style: TextStyle(color: green, fontWeight: FontWeight.bold, fontSize: 13)),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor, bgColor;
-  final String value, label;
-
-  const _StatCard({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(value,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: dark)),
-              Text(label,
-                  style: const TextStyle(color: grey, fontSize: 12)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityItem {
-  final IconData icon;
-  final Color iconColor, bgColor, statusColor;
-  final String title, subtitle, status;
-
-  _ActivityItem({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.title,
-    required this.subtitle,
-    required this.status,
-    required this.statusColor,
-  });
-}
-
-class _ProgressBar extends StatelessWidget {
-  final String label, percent;
-  final double value;
-  final Color color;
-
-  const _ProgressBar({
-    required this.label,
-    required this.value,
-    required this.percent,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: const TextStyle(fontSize: 14, color: dark, fontWeight: FontWeight.w500)),
-            Text(percent, style: TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: value,
-            backgroundColor: const Color(0xFFEEEEEE),
-            valueColor: AlwaysStoppedAnimation<Color>(color),
-            minHeight: 8,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ThreatCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor, bgColor, severityColor;
-  final String title, subtitle, severity;
-
-  const _ThreatCard({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.title,
-    required this.subtitle,
-    required this.severity,
-    required this.severityColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(title,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: dark)),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: severityColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(severity,
-                          style: TextStyle(
-                              color: severityColor, fontSize: 12, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(subtitle,
-                    style: const TextStyle(color: grey, fontSize: 12)),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
