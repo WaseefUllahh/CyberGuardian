@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../utils/auth_utils.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../utils/app_colors.dart';
 import 'dashboard_screen.dart';
 import 'scanner_screen.dart';
 import 'learning_screen.dart';
@@ -25,10 +26,24 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final navBgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final unselectedColor = isDark ? const Color(0xFFAAAAAA) : grey;
+
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: PopScope(
+        canPop: _currentIndex == 0,
+        onPopInvokedWithResult: (didPop, dynamic result) {
+          if (!didPop) {
+            setState(() {
+              _currentIndex = 0;
+            });
+          }
+        },
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -39,34 +54,34 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: green,
-        unselectedItemColor: grey,
-        backgroundColor: Colors.white,
+        unselectedItemColor: unselectedColor,
+        backgroundColor: navBgColor,
         selectedFontSize: 12,
         unselectedFontSize: 12,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            icon: Icon(PhosphorIcons.house()),
+            activeIcon: Icon(PhosphorIcons.house(PhosphorIconsStyle.fill)),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.document_scanner_outlined),
-            activeIcon: Icon(Icons.document_scanner),
+            icon: Icon(PhosphorIcons.scan()),
+            activeIcon: Icon(PhosphorIcons.scan(PhosphorIconsStyle.fill)),
             label: 'Scanner',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
+            icon: Icon(PhosphorIcons.bookOpen()),
+            activeIcon: Icon(PhosphorIcons.bookOpen(PhosphorIconsStyle.fill)),
             label: 'Learning',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.description_outlined),
-            activeIcon: Icon(Icons.description),
+            icon: Icon(PhosphorIcons.fileText()),
+            activeIcon: Icon(PhosphorIcons.fileText(PhosphorIconsStyle.fill)),
             label: 'Reports',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
+            icon: Icon(PhosphorIcons.user()),
+            activeIcon: Icon(PhosphorIcons.user(PhosphorIconsStyle.fill)),
             label: 'Profile',
           ),
         ],
@@ -74,3 +89,4 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 }
+

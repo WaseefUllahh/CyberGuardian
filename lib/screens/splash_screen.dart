@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../utils/auth_utils.dart';
-import 'login_screen.dart';
+import '../utils/app_colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,12 +15,25 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // 3 seconds delay before transitioning to Login Screen
-    Timer(const Duration(seconds: 3), () {
+    _checkAuthAndNavigate();
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userModel = await AuthService().getCurrentUserData();
+      final bool isAdmin = userModel?.role == 'admin';
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, isAdmin ? '/admin' : '/home');
+      }
+    } else {
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/login');
       }
-    });
+    }
   }
 
   @override
@@ -59,3 +73,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+

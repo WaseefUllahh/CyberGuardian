@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/auth_utils.dart';
+import '../utils/app_colors.dart';
 
 class MiniStat extends StatelessWidget {
   final String value, label;
@@ -17,10 +17,14 @@ class MiniStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : grey;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -35,10 +39,10 @@ class MiniStat extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(value,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 22, color: dark)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 22, color: textColor)),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 12, color: grey)),
+          Text(label, style: TextStyle(fontSize: 12, color: subtitleColor)),
         ],
       ),
     );
@@ -63,10 +67,15 @@ class ThreatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : grey;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(14)),
+          color: cardColor, borderRadius: BorderRadius.circular(14)),
       child: Row(
         children: [
           Container(
@@ -81,13 +90,13 @@ class ThreatItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: dark)),
+                        color: textColor)),
                 const SizedBox(height: 4),
                 Text(subtitle,
-                    style: const TextStyle(color: grey, fontSize: 12)),
+                    style: TextStyle(color: subtitleColor, fontSize: 12)),
               ],
             ),
           ),
@@ -96,7 +105,7 @@ class ThreatItem extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: severityColor.withOpacity(0.1),
+              color: severityColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(severity,
@@ -126,16 +135,21 @@ class ScanHistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : grey;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(14)),
+          color: cardColor, borderRadius: BorderRadius.circular(14)),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -152,14 +166,14 @@ class ScanHistoryItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(url,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
-                        color: dark),
+                        color: textColor),
                     overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 3),
                 Text('$type · $time',
-                    style: const TextStyle(color: grey, fontSize: 12)),
+                    style: TextStyle(color: subtitleColor, fontSize: 12)),
               ],
             ),
           ),
@@ -167,9 +181,9 @@ class ScanHistoryItem extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: statusColor.withOpacity(0.4)),
+              border: Border.all(color: statusColor.withValues(alpha: 0.4)),
             ),
             child: Text(status,
                 style: TextStyle(
@@ -199,6 +213,11 @@ class ReportItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : grey;
+
     final bool isResolved = status == 'Resolved';
     final Color statusColor =
         isResolved ? green : const Color(0xFFE65100);
@@ -208,7 +227,7 @@ class ReportItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(14)),
+          color: cardColor, borderRadius: BorderRadius.circular(14)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -217,16 +236,16 @@ class ReportItem extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(title,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: dark)),
+                        color: textColor)),
               ),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(status,
@@ -239,7 +258,7 @@ class ReportItem extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(description,
-              style: const TextStyle(color: grey, fontSize: 13)),
+              style: TextStyle(color: subtitleColor, fontSize: 13)),
           const SizedBox(height: 10),
           // Categories chips
           Wrap(
@@ -250,11 +269,11 @@ class ReportItem extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
+                        color: isDark ? const Color(0xFF1A3B22) : const Color(0xFFE8F5E9),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(cat,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 11,
                               color: green,
                               fontWeight: FontWeight.w600)),
@@ -265,16 +284,16 @@ class ReportItem extends StatelessWidget {
           // Footer: time + severity
           Row(
             children: [
-              const Icon(Icons.access_time, size: 12, color: grey),
+              Icon(Icons.access_time, size: 12, color: subtitleColor),
               const SizedBox(width: 4),
               Text(time,
-                  style: const TextStyle(color: grey, fontSize: 11)),
+                  style: TextStyle(color: subtitleColor, fontSize: 11)),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: severityColor.withOpacity(0.1),
+                  color: severityColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text('$severity Severity',

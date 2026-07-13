@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
-import '../utils/auth_utils.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../utils/app_colors.dart';
 import '../widgets/report_widgets.dart';
+import '../widgets/dashboard_widgets.dart';
+import '../models/user_model.dart';
+import '../models/scan_model.dart';
+import '../models/report_model.dart';
+import '../services/auth_service.dart';
+import '../services/url_scan_service.dart';
+import '../services/report_service.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -12,34 +20,6 @@ class ReportsScreen extends StatefulWidget {
 class _ReportsScreenState extends State<ReportsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  // Pre-populated submitted reports list (mutable — new reports get added)
-  final List<Map<String, dynamic>> _submittedReports = [
-    {
-      'title': 'Phishing Email Reported',
-      'description': 'Fake Apple ID verification email submitted for review.',
-      'time': '2 days ago',
-      'status': 'Under Review',
-      'severity': 'High',
-      'categories': ['Phishing'],
-    },
-    {
-      'title': 'Scam SMS Reported',
-      'description': 'Fraudulent bank OTP message flagged and sent.',
-      'time': '5 days ago',
-      'status': 'Resolved',
-      'severity': 'Medium',
-      'categories': ['Suspicious SMS', 'Scam / Fraud'],
-    },
-    {
-      'title': 'Suspicious Link Reported',
-      'description': 'Malware-hosting URL reported to security team.',
-      'time': '1 week ago',
-      'status': 'Resolved',
-      'severity': 'High',
-      'categories': ['Malware', 'Fake Website'],
-    },
-  ];
 
   @override
   void initState() {
@@ -53,21 +33,14 @@ class _ReportsScreenState extends State<ReportsScreen>
     super.dispose();
   }
 
-  // ── Open Submit Report screen and AWAIT the returned data ─────────────────
   Future<void> _openSubmitReport() async {
-    // push named route and await result (demonstrates returning data from screens)
     final result = await Navigator.pushNamed(context, '/submit-report');
-
-    if (result != null && result is Map<String, dynamic>) {
-      setState(() {
-        _submittedReports.insert(0, result); // add at top of list
-      });
-      // Switch to the Submitted tab to show the new report
+    if (result != null && result == true) {
       _tabController.animateTo(2);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Report submitted! We\'ll review it shortly.'),
+          SnackBar(
+            content: const Text('✅ Report submitted! We\'ll review it shortly.'),
             backgroundColor: green,
             behavior: SnackBarBehavior.floating,
           ),
@@ -76,33 +49,43 @@ class _ReportsScreenState extends State<ReportsScreen>
     }
   }
 
+  String _formatTime(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inDays > 0) return '${diff.inDays} days ago';
+    if (diff.inHours > 0) return '${diff.inHours} hours ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes} mins ago';
+    return 'Just now';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F5F5);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      // ── AppBar with TabBar ───────────────────────────────────────────────
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Reports',
-            style: TextStyle(fontWeight: FontWeight.bold, color: dark)),
-        backgroundColor: Colors.white,
+        title: Text('Reports',
+            style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+        backgroundColor: appBarColor,
         elevation: 0,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: appBarColor,
         leading: Navigator.canPop(context)
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: dark),
+                icon: Icon(Icons.arrow_back_ios_new_rounded, color: textColor),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
         actions: [
           TextButton.icon(
             onPressed: _openSubmitReport,
-            icon: const Icon(Icons.add_circle_outline, color: green, size: 20),
-            label: const Text('Submit',
+            icon: Icon(PhosphorIcons.plusCircle(), color: green, size: 20),
+            label: Text('Submit',
                 style: TextStyle(
                     color: green, fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ],
-        // ── TabBar embedded in AppBar ──
         bottom: TabBar(
           controller: _tabController,
           labelColor: green,
@@ -131,197 +114,226 @@ class _ReportsScreenState extends State<ReportsScreen>
     );
   }
 
-  // ── Tab 1: Threat Digest ──────────────────────────────────────────────────
   Widget _buildThreatsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Stats Summary
-          Row(
-            children: [
-              Expanded(
-                child: MiniStat(
-                  value: '42',
-                  label: 'Total Scans',
-                  icon: Icons.search,
-                  color: const Color(0xFF1565C0),
-                  bgColor: const Color(0xFFE3F2FD),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: MiniStat(
-                  value: '38',
-                  label: 'Safe',
-                  icon: Icons.check_circle_outline,
-                  color: green,
-                  bgColor: const Color(0xFFE8F5E9),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: MiniStat(
-                  value: '4',
-                  label: 'Threats',
-                  icon: Icons.warning_amber_rounded,
-                  color: Colors.red,
-                  bgColor: const Color(0xFFFFEBEE),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          const Text('Active Threat Digest',
-              style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: dark)),
-          const SizedBox(height: 14),
-
-          ThreatItem(
-            icon: Icons.trending_up,
-            iconColor: Colors.red,
-            bgColor: const Color(0xFFFFEBEE),
-            title: 'SMS Phishing Surge',
-            subtitle: 'Fake bank OTP messages up 34% this week.',
-            severity: 'High',
-            severityColor: Colors.red,
-          ),
-          const SizedBox(height: 10),
-          ThreatItem(
-            icon: Icons.bar_chart,
-            iconColor: const Color(0xFFE65100),
-            bgColor: const Color(0xFFFBE9E7),
-            title: 'New Password Leak',
-            subtitle: '2.3M credentials exposed in data breach.',
-            severity: 'Medium',
-            severityColor: const Color(0xFFE65100),
-          ),
-          const SizedBox(height: 10),
-          ThreatItem(
-            icon: Icons.bug_report_outlined,
-            iconColor: const Color(0xFF7B1FA2),
-            bgColor: const Color(0xFFF3E5F5),
-            title: 'Malware Variant Detected',
-            subtitle: 'New trojan targeting mobile banking apps.',
-            severity: 'High',
-            severityColor: Colors.red,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Tab 2: Scan History ───────────────────────────────────────────────────
-  Widget _buildScanHistoryTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Recent Scans',
-              style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: dark)),
-          const SizedBox(height: 14),
-          ScanHistoryItem(
-              url: 'example-site.com',
-              type: 'URL Scan',
-              time: '10 mins ago',
-              status: 'Safe',
-              statusColor: green),
-          const SizedBox(height: 10),
-          ScanHistoryItem(
-              url: 'login-alert-message',
-              type: 'SMS Analysis',
-              time: '1 hour ago',
-              status: 'Suspicious',
-              statusColor: Colors.red),
-          const SizedBox(height: 10),
-          ScanHistoryItem(
-              url: 'unknown-link.net',
-              type: 'URL Scan',
-              time: 'Yesterday',
-              status: 'Safe',
-              statusColor: green),
-          const SizedBox(height: 10),
-          ScanHistoryItem(
-              url: 'free-prize.xyz',
-              type: 'URL Scan',
-              time: '2 days ago',
-              status: 'Phishing',
-              statusColor: Colors.red),
-          const SizedBox(height: 10),
-          ScanHistoryItem(
-              url: 'bank-notification',
-              type: 'SMS Analysis',
-              time: '3 days ago',
-              status: 'Safe',
-              statusColor: green),
-          const SizedBox(height: 10),
-          ScanHistoryItem(
-              url: 'noreply@apple.support',
-              type: 'Email Analysis',
-              time: '4 days ago',
-              status: 'Phishing',
-              statusColor: Colors.red),
-        ],
-      ),
-    );
-  }
-
-  // ── Tab 3: Submitted Reports ──────────────────────────────────────────────
-  Widget _buildSubmittedTab() {
-    if (_submittedReports.isEmpty) {
-      return Center(
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF5F5F5),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.flag_outlined, size: 56, color: grey),
+            Text('Security Statistics',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.dark)),
+            const SizedBox(height: 14),
+            StreamBuilder<UserModel?>(
+              stream: AuthService().getCurrentUserDataStream(),
+              builder: (context, snapshot) {
+                final totalScans = snapshot.data?.totalScans ?? 0;
+                final safeScans = snapshot.data?.safeScans ?? 0;
+                final unsafeScans = snapshot.data?.unsafeScans ?? 0;
+                return StreamBuilder<List<ReportModel>>(
+                  stream: ReportService().getUserReports(),
+                  builder: (context, reportSnapshot) {
+                    final reportsCount = reportSnapshot.data?.length ?? 0;
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: StatCard(
+                                icon: PhosphorIcons.magnifyingGlass(),
+                                value: '$totalScans',
+                                label: 'Total Scans',
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: StatCard(
+                                icon: PhosphorIcons.shieldCheck(),
+                                value: '$safeScans',
+                                label: 'Safe Results',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: StatCard(
+                                icon: PhosphorIcons.warning(),
+                                value: '$unsafeScans',
+                                label: 'Suspicious',
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: StatCard(
+                                icon: PhosphorIcons.paperPlaneTilt(),
+                                value: '$reportsCount',
+                                label: 'Reports Sent',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                );
+              }
             ),
-            const SizedBox(height: 20),
-            const Text('No reports submitted yet',
+            const SizedBox(height: 24),
+            Text('Active Threat Digest',
                 style: TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.bold, color: dark)),
-            const SizedBox(height: 8),
-            const Text('Tap "Submit" above to report a cyber threat',
-                style: TextStyle(fontSize: 13, color: grey)),
+                    fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
+            const SizedBox(height: 14),
+            ThreatItem(
+              icon: PhosphorIcons.trendUp(),
+              iconColor: Colors.red,
+              bgColor: isDark ? const Color(0xFF3E1111) : const Color(0xFFFFEBEE),
+              title: 'SMS Phishing Surge',
+              subtitle: 'Fake bank OTP messages up 34% this week.',
+              severity: 'High',
+              severityColor: Colors.red,
+            ),
+            const SizedBox(height: 10),
+            ThreatItem(
+              icon: PhosphorIcons.chartBar(),
+              iconColor: const Color(0xFFE65100),
+              bgColor: isDark ? const Color(0xFF3B1E05) : const Color(0xFFFBE9E7),
+              title: 'New Password Leak',
+              subtitle: '2.3M credentials exposed in data breach.',
+              severity: 'Medium',
+              severityColor: const Color(0xFFE65100),
+            ),
+            const SizedBox(height: 10),
+            ThreatItem(
+              icon: PhosphorIcons.bug(),
+              iconColor: isDark ? const Color(0xFFCE93D8) : const Color(0xFF7B1FA2),
+              bgColor: isDark ? const Color(0xFF281131) : const Color(0xFFF3E5F5),
+              title: 'Malware Variant Detected',
+              subtitle: 'New trojan targeting mobile banking apps.',
+              severity: 'High',
+              severityColor: Colors.red,
+            ),
           ],
         ),
       );
-    }
+    });
+  }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${_submittedReports.length} Report${_submittedReports.length == 1 ? "" : "s"} Submitted',
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: dark),
-          ),
-          const SizedBox(height: 14),
-          ..._submittedReports.map((report) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ReportItem(
-                  title: report['title'] as String,
-                  description: report['description'] as String,
-                  time: report['time'] as String,
-                  status: report['status'] as String,
-                  severity: report['severity'] as String? ?? 'Medium',
-                  categories:
-                      (report['categories'] as List?)?.cast<String>() ?? [],
+  Widget _buildScanHistoryTab() {
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Recent Scans',
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
+            const SizedBox(height: 14),
+            StreamBuilder<List<ScanModel>>(
+              stream: UrlScanService().getUserScans(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final scans = snapshot.data ?? [];
+                if (scans.isEmpty) {
+                  return Text('No scan history found.', style: TextStyle(color: grey));
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: scans.length,
+                  itemBuilder: (context, index) {
+                    final scan = scans[index];
+                    final bool isSafe = scan.result.toLowerCase() == 'safe';
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ScanHistoryItem(
+                        url: scan.url,
+                        type: '${scan.provider} Scan',
+                        time: _formatTime(scan.createdAt.toDate()),
+                        status: scan.result,
+                        statusColor: isSafe ? green : Colors.red,
+                      ),
+                    );
+                  }
+                );
+              }
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildSubmittedTab() {
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      return StreamBuilder<List<ReportModel>>(
+        stream: ReportService().getUserReports(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final reports = snapshot.data ?? [];
+          
+          if (reports.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(PhosphorIcons.flag(), size: 56, color: grey),
+                  ),
+                  const SizedBox(height: 20),
+                  Text('No reports submitted yet',
+                      style: TextStyle(
+                          fontSize: 17, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
+                  const SizedBox(height: 8),
+                  Text('Tap "Submit" above to report a cyber threat',
+                      style: TextStyle(fontSize: 13, color: isDark ? const Color(0xFFAAAAAA) : grey)),
+                ],
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${reports.length} Report${reports.length == 1 ? "" : "s"} Submitted',
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark),
                 ),
-              )),
-        ],
-      ),
-    );
+                const SizedBox(height: 14),
+                ...reports.map((report) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: ReportItem(
+                        title: report.category,
+                        description: report.details,
+                        time: _formatTime(report.createdAt.toDate()),
+                        status: report.status,
+                        severity: 'Medium', // We can derive this based on category if needed
+                        categories: [report.source],
+                      ),
+                    )),
+              ],
+            ),
+          );
+        }
+      );
+    });
   }
 }

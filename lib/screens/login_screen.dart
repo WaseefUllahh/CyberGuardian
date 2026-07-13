@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../utils/app_colors.dart';
 import '../utils/auth_utils.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth_widgets.dart';
-import 'signup_screen.dart';
-import 'main_navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,81 +25,148 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  void _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    Future.delayed(const Duration(milliseconds: 1200), () {
+
+    final authService = AuthService();
+    String? error = await authService.login(_email.text, _password.text);
+
+    if (error != null) {
       if (mounted) {
         setState(() => _loading = false);
-        // Push replacement using MaterialPageRoute
-        Navigator.pushReplacementNamed(context, '/home');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
       }
-    });
+      return;
+    }
+
+    if (mounted) {
+      setState(() => _loading = false);
+      final userModel = await authService.getCurrentUserData();
+      if (!mounted) return;
+      final bool isAdmin = userModel?.role == 'admin';
+      Navigator.pushReplacementNamed(context, isAdmin ? '/admin' : '/home');
+    }
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : AppColors.grey;
+
+    return GeometricAuthLayout(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Logo header
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: Colors.transparent,
+                ),
+                child: Image.asset(
+                  'assets/images/cyberguardian_logo.png',
+                  width: 56,
+                  height: 56,
+                  errorBuilder: (c, e, s) => Icon(PhosphorIcons.shieldCheck(), color: AppColors.brandGreen, size: 56),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
+          // Welcome text
+          Text(
+            'USER LOGIN',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: AppColors.brandGreen,
+              letterSpacing: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Welcome back to CyberGuardian',
+            style: TextStyle(color: subtitleColor, fontSize: 13, letterSpacing: 0.5),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 48),
+
+          Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AuthField(
+                  label: '',
+                  hint: 'Email address',
+                  controller: _email,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: emailValidator,
+                  prefixIcon: PhosphorIcons.user(),
+                ),
+                const SizedBox(height: 16),
+
+                AuthField(
+                  label: '',
+                  hint: 'Password',
+                  controller: _password,
+                  obscure: _obscure,
+                  prefixIcon: PhosphorIcons.lock(),
+                  suffixIcon: passwordToggle(_obscure, () => setState(() => _obscure = !_obscure)),
+                  validator: passwordValidator,
+                ),
+                const SizedBox(height: 12),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (_email.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Enter your email first to reset password.'), backgroundColor: Colors.orange),
+                        );
+                        return;
+                      }
+                      final messenger = ScaffoldMessenger.of(context);
+                      final error = await AuthService().resetPassword(_email.text);
+                      if (mounted) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text(error ?? 'Reset instructions sent to your email.'), backgroundColor: error == null ? AppColors.brandGreen : Colors.red),
+                        );
+                      }
+                    },
+                    child: Text('Forgot password?',
+                        style: TextStyle(color: subtitleColor, fontSize: 12)),
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                AuthButton(label: 'Login', isLoading: _loading, onPressed: _submit),
+                const SizedBox(height: 32),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const AuthHeader(
-                      icon: Icons.lock_outline_rounded,
-                      title: 'Welcome Back',
-                      subtitle: 'Log in to access your security dashboard',
-                    ),
-                    const SizedBox(height: 36),
-                    AuthField(
-                      label: 'Email Address',
-                      hint: 'wajahat@email.com',
-                      prefixIcon: Icons.email_outlined,
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: emailValidator,
-                    ),
-                    const SizedBox(height: 20),
-                    AuthField(
-                      label: 'Password',
-                      hint: '••••••••',
-                      prefixIcon: Icons.lock_outline_rounded,
-                      controller: _password,
-                      obscure: _obscure,
-                      suffixIcon: passwordToggle(_obscure, () => setState(() => _obscure = !_obscure)),
-                      validator: passwordValidator,
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Reset instructions sent to your email.'), backgroundColor: green),
-                        ),
-                        child: const Text('Forgot Password?',
-                            style: TextStyle(color: green, fontWeight: FontWeight.bold, fontSize: 13)),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    AuthButton(label: 'Login', isLoading: _loading, onPressed: _submit),
-                    const SizedBox(height: 24),
-                    RedirectLink(
-                      question: "Don't have an account? ",
-                      actionLabel: 'Sign Up',
-                      onTap: () {
-                        // Push to SignUpScreen (user can pop back)
-                      Navigator.pushNamed(context, '/signup');
-                      },
+                    Text("Don't have an account? ", style: TextStyle(color: subtitleColor, fontSize: 13)),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/signup'),
+                      child: Text('Sign Up', style: TextStyle(color: AppColors.brandGreen, fontSize: 13, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
-        ),
-      );
+        ],
+      ),
+    );
+  }
 }

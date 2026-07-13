@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../utils/app_colors.dart';
 import '../utils/auth_utils.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth_widgets.dart';
-import 'main_navigation_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -27,92 +29,143 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  void _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    Future.delayed(const Duration(milliseconds: 1200), () {
+
+    final error = await AuthService().signUp(_name.text, _email.text, _password.text);
+    if (error != null) {
       if (mounted) {
         setState(() => _loading = false);
-        // Push replacement using MaterialPageRoute to MainNavigationScreen
-        Navigator.pushReplacementNamed(context, '/home');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
       }
-    });
+      return;
+    }
+
+    if (mounted) {
+      setState(() => _loading = false);
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : AppColors.grey;
+
+    return GeometricAuthLayout(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Logo header
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: Colors.transparent,
+                ),
+                child: Image.asset(
+                  'assets/images/cyberguardian_logo.png',
+                  width: 56,
+                  height: 56,
+                  errorBuilder: (c, e, s) => Icon(PhosphorIcons.shieldCheck(), color: AppColors.brandGreen, size: 56),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
+          // Welcome text
+          Text(
+            'USER SIGNUP',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: AppColors.brandGreen,
+              letterSpacing: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Join CyberGuardian today',
+            style: TextStyle(color: subtitleColor, fontSize: 13, letterSpacing: 0.5),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 48),
+
+          Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AuthField(
+                  label: '',
+                  hint: 'Full Name',
+                  controller: _name,
+                  validator: (v) => requiredValidator(v, 'name'),
+                  prefixIcon: PhosphorIcons.user(),
+                ),
+                const SizedBox(height: 16),
+
+                AuthField(
+                  label: '',
+                  hint: 'Email address',
+                  controller: _email,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: emailValidator,
+                  prefixIcon: PhosphorIcons.envelope(),
+                ),
+                const SizedBox(height: 16),
+
+                AuthField(
+                  label: '',
+                  hint: 'Password',
+                  controller: _password,
+                  obscure: _obscurePass,
+                  prefixIcon: PhosphorIcons.lock(),
+                  suffixIcon: passwordToggle(_obscurePass, () => setState(() => _obscurePass = !_obscurePass)),
+                  validator: passwordValidator,
+                ),
+                const SizedBox(height: 16),
+
+                AuthField(
+                  label: '',
+                  hint: 'Confirm Password',
+                  controller: _confirm,
+                  obscure: _obscureConfirm,
+                  prefixIcon: PhosphorIcons.lockKey(),
+                  suffixIcon: passwordToggle(_obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm)),
+                  validator: (v) {
+                    if (requiredValidator(v, 'confirm password') != null) return requiredValidator(v, 'confirm password');
+                    if (v != _password.text) return 'Passwords do not match';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 32),
+
+                AuthButton(label: 'Sign Up', isLoading: _loading, onPressed: _submit),
+                const SizedBox(height: 32),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const AuthHeader(
-                      icon: Icons.person_add_alt_1_rounded,
-                      title: 'Create Account',
-                      subtitle: 'Join CyberGuardian and protect your online safety',
-                    ),
-                    const SizedBox(height: 28),
-                    AuthField(
-                      label: 'Full Name',
-                      hint: 'Wajahat',
-                      prefixIcon: Icons.person_outline_rounded,
-                      controller: _name,
-                      validator: (v) => requiredValidator(v, 'name'),
-                    ),
-                    const SizedBox(height: 16),
-                    AuthField(
-                      label: 'Email Address',
-                      hint: 'wajahat@email.com',
-                      prefixIcon: Icons.email_outlined,
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: emailValidator,
-                    ),
-                    const SizedBox(height: 16),
-                    AuthField(
-                      label: 'Password',
-                      hint: '••••••••',
-                      prefixIcon: Icons.lock_outline_rounded,
-                      controller: _password,
-                      obscure: _obscurePass,
-                      suffixIcon: passwordToggle(_obscurePass, () => setState(() => _obscurePass = !_obscurePass)),
-                      validator: passwordValidator,
-                    ),
-                    const SizedBox(height: 16),
-                    AuthField(
-                      label: 'Confirm Password',
-                      hint: '••••••••',
-                      prefixIcon: Icons.lock_outline_rounded,
-                      controller: _confirm,
-                      obscure: _obscureConfirm,
-                      suffixIcon: passwordToggle(_obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm)),
-                      validator: (v) {
-                        if (requiredValidator(v, 'confirm password') != null) return requiredValidator(v, 'confirm password');
-                        if (v != _password.text) return 'Passwords do not match';
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 28),
-                    AuthButton(label: 'Create Account', isLoading: _loading, onPressed: _submit),
-                    const SizedBox(height: 24),
-                    RedirectLink(
-                      question: 'Already have an account? ',
-                      actionLabel: 'Login',
-                      onTap: () {
-                        // Pop back to LoginScreen
-                        Navigator.pop(context);
-                      },
+                    Text("Already have an account? ", style: TextStyle(color: subtitleColor, fontSize: 13)),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Text('Log In', style: TextStyle(color: AppColors.brandGreen, fontSize: 13, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
-        ),
-      );
+        ],
+      ),
+    );
+  }
 }

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import '../utils/auth_utils.dart';
+import '../utils/app_colors.dart';
+import 'premium_icon.dart';
 
 class CourseCard extends StatelessWidget {
   final IconData icon;
-  final Color iconColor, bgColor;
   final String title, subtitle, lessons, duration;
   final double progress;
 
   const CourseCard({
     super.key,
     required this.icon,
-    required this.iconColor,
-    required this.bgColor,
     required this.title,
     required this.subtitle,
     required this.lessons,
@@ -21,10 +19,15 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : grey;
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -32,31 +35,24 @@ class CourseCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: iconColor, size: 24),
-              ),
+              PremiumCyberIcon(icon: icon, size: 24, hasBackground: true),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: dark)),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.menu_book_outlined, size: 14, color: grey),
+                        Icon(Icons.menu_book_outlined, size: 14, color: subtitleColor),
                         const SizedBox(width: 4),
-                        Text(lessons, style: const TextStyle(fontSize: 12, color: grey)),
+                        Text(lessons, style: TextStyle(fontSize: 12, color: subtitleColor)),
                         const SizedBox(width: 12),
-                        const Icon(Icons.access_time, size: 14, color: grey),
+                        Icon(Icons.access_time, size: 14, color: subtitleColor),
                         const SizedBox(width: 4),
-                        Text(duration, style: const TextStyle(fontSize: 12, color: grey)),
+                        Text(duration, style: TextStyle(fontSize: 12, color: subtitleColor)),
                       ],
                     ),
                   ],
@@ -65,7 +61,7 @@ class CourseCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text(subtitle, style: const TextStyle(fontSize: 13, color: grey, height: 1.4)),
+          Text(subtitle, style: TextStyle(fontSize: 13, color: subtitleColor, height: 1.4)),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -74,15 +70,15 @@ class CourseCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: const Color(0xFFEEEEEE),
-                    valueColor: const AlwaysStoppedAnimation<Color>(green),
+                    backgroundColor: isDark ? const Color(0xFF333333) : const Color(0xFFEEEEEE),
+                    valueColor: AlwaysStoppedAnimation<Color>(green),
                     minHeight: 6,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Text('${(progress * 100).toInt()}%',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: green)),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: green)),
             ],
           ),
         ],

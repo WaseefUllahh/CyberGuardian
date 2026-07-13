@@ -1,10 +1,3 @@
-import 'package:flutter/material.dart';
-
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-const Color green = Color(0xFF2E7D32);
-const Color grey = Color(0xFF757575);
-const Color dark = Color(0xFF333333);
 
 // ─── Validators ─────────────────────────────────────────────────────────────
 

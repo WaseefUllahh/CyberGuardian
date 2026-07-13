@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
 import '../utils/auth_utils.dart';
 
 class SubmitReportScreen extends StatefulWidget {
@@ -78,16 +79,24 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F5F5);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : grey;
+    final inputFillColor = isDark ? const Color(0xFF2A2A2A) : Colors.white;
+    final borderColor = isDark ? const Color(0xFF333333) : grey.withValues(alpha: 0.3);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Submit Report',
-            style: TextStyle(fontWeight: FontWeight.bold, color: dark)),
-        backgroundColor: Colors.white,
+        title: Text('Submit Report',
+            style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+        backgroundColor: appBarColor,
         elevation: 0,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: appBarColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: dark),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textColor),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -99,71 +108,75 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Report a Threat',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: dark)),
+                Text('Report a Threat',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor)),
                 const SizedBox(height: 4),
-                const Text('Help us keep the community safe by reporting suspicious activity.',
-                    style: TextStyle(fontSize: 14, color: grey)),
+                Text('Help us keep the community safe by reporting suspicious activity.',
+                    style: TextStyle(fontSize: 14, color: subtitleColor)),
                 const SizedBox(height: 24),
 
                 // ── Threat Title ──
-                const Text('Title',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: dark)),
+                Text('Title',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _titleController,
                   validator: (v) => requiredValidator(v, 'title'),
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     hintText: 'e.g., Fake Bank Alert SMS',
-                    hintStyle: const TextStyle(color: grey),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: TextStyle(color: subtitleColor),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: green, width: 1.5),
+                      borderSide: BorderSide(color: green, width: 1.5),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: inputFillColor,
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // ── Threat Description ──
-                const Text('Description',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: dark)),
+                Text('Description',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _descriptionController,
                   maxLines: 4,
                   validator: (v) => requiredValidator(v, 'description'),
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     hintText: 'Provide details about the threat...',
-                    hintStyle: const TextStyle(color: grey),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: TextStyle(color: subtitleColor),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: green, width: 1.5),
+                      borderSide: BorderSide(color: green, width: 1.5),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: inputFillColor,
                   ),
                 ),
                 const SizedBox(height: 24),
 
                 // ── Checkboxes for Categories ──
-                const Text('Threat Categories (Select all that apply)',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: dark)),
+                Text('Threat Categories (Select all that apply)',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textColor)),
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: inputFillColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE0E0E0)),
+                    border: Border.all(color: borderColor),
                   ),
                   child: Column(
                     children: _categories.keys.map((String key) {
                       return CheckboxListTile(
-                        title: Text(key, style: const TextStyle(fontSize: 14, color: dark)),
+                        title: Text(key, style: TextStyle(fontSize: 14, color: textColor)),
                         value: _categories[key],
                         activeColor: green,
                         checkColor: Colors.white,
@@ -181,25 +194,28 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
                 const SizedBox(height: 24),
 
                 // ── Severity Dropdown ──
-                const Text('Severity Level',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: dark)),
+                Text('Severity Level',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textColor)),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: _severity,
+                  initialValue: _severity,
+                  dropdownColor: appBarColor,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: green, width: 1.5),
+                      borderSide: BorderSide(color: green, width: 1.5),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: inputFillColor,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                   items: _severityOptions.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value, style: const TextStyle(color: dark)),
+                      child: Text(value, style: TextStyle(color: textColor)),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {

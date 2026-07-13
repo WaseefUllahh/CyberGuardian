@@ -1,116 +1,167 @@
 import 'package:flutter/material.dart';
-import '../utils/auth_utils.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../utils/app_colors.dart';
+import '../utils/user_store.dart';
 
 class DashboardDrawer extends StatelessWidget {
   const DashboardDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = UserStore().currentUser;
+    final name = user?.name ?? 'User';
+    final email = user?.email ?? 'user@email.com';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final drawerBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.dark;
+    final subtitleColor = isDark ? const Color(0xFFAAAAAA) : AppColors.grey;
+    final dividerColor = isDark ? const Color(0xFF333333) : const Color(0xFFEEEEEE);
+
     return Drawer(
-      backgroundColor: Colors.white,
-      child: Column(
+      backgroundColor: drawerBg,
+      child: Stack(
         children: [
-          // ── Drawer Header ──
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(20, 52, 20, 28),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          // ── Background watermark logo ──
+          Positioned(
+            bottom: 90,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Opacity(
+                opacity: isDark ? 0.04 : 0.06,
+                child: Image.asset(
+                  'assets/images/cyberguardian_logo.png',
+                  width: 220,
+                  height: 220,
+                ),
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(
-                  'assets/images/cyberguardian_logo.png',
-                  width: 72,
-                  height: 72,
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'Waseef Ullah', // Updated name to match dashboard
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'waseef@email.com',
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    '🛡️  Protected',
-                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
           ),
 
-          // ── Navigation Items ──
-          const SizedBox(height: 8),
-          _drawerNavItem(
-            context,
-            icon: Icons.home_rounded,
-            label: 'Home',
-            onTap: () => Navigator.pop(context), // just close drawer
-          ),
-          _drawerNavItem(
-            context,
-            icon: Icons.document_scanner_outlined,
-            label: 'Scanner',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/scanner');
-            },
-          ),
-          _drawerNavItem(
-            context,
-            icon: Icons.description_outlined,
-            label: 'Reports',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/reports');
-            },
-          ),
-          _drawerNavItem(
-            context,
-            icon: Icons.person_outline,
-            label: 'Profile',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/profile');
-            },
-          ),
+          Column(
+            children: [
+              // ── Drawer Header ──
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(20, 52, 20, 28),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/images/cyberguardian_logo.png',
+                      width: 72,
+                      height: 72,
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      email,
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset('assets/images/cyberguardian_logo.png', height: 24, width: 24),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Protected',
+                            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-          const Spacer(),
-          const Divider(indent: 16, endIndent: 16),
+              // ── Navigation Items ──
+              const SizedBox(height: 8),
+              _drawerNavItem(
+                context,
+                icon: PhosphorIcons.house(),
+                label: 'Home',
+                textColor: textColor,
+                subtitleColor: subtitleColor,
+                onTap: () => Navigator.pop(context),
+              ),
+              _drawerNavItem(
+                context,
+                icon: PhosphorIcons.scan(),
+                label: 'Scanner',
+                textColor: textColor,
+                subtitleColor: subtitleColor,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/scanner');
+                },
+              ),
+              _drawerNavItem(
+                context,
+                icon: PhosphorIcons.fileText(),
+                label: 'Reports',
+                textColor: textColor,
+                subtitleColor: subtitleColor,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/reports');
+                },
+              ),
+              _drawerNavItem(
+                context,
+                icon: PhosphorIcons.user(),
+                label: 'Profile',
+                textColor: textColor,
+                subtitleColor: subtitleColor,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/profile');
+                },
+              ),
 
-          // ── Logout ──
-          _drawerNavItem(
-            context,
-            icon: Icons.logout_rounded,
-            label: 'Logout',
-            iconColor: Colors.red,
-            labelColor: Colors.red,
-            onTap: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context, '/login', (route) => false);
-            },
+              const Spacer(),
+              Divider(indent: 16, endIndent: 16, color: dividerColor),
+
+              // ── Logout ──
+              _drawerNavItem(
+                context,
+                icon: PhosphorIcons.signOut(),
+                label: 'Logout',
+                iconColor: Colors.red,
+                textColor: Colors.red,
+                subtitleColor: Colors.red,
+                onTap: () async {
+                  await UserStore().logout();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/login', (route) => false);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
-          const SizedBox(height: 16),
         ],
       ),
     );
@@ -121,20 +172,26 @@ class DashboardDrawer extends StatelessWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
-    Color iconColor = dark,
-    Color labelColor = dark,
+    Color? iconColor,
+    Color? textColor,
+    Color? subtitleColor,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : AppColors.dark;
+    final defaultIconColor = isDark ? Colors.white70 : AppColors.dark;
+    final trailColor = isDark ? const Color(0xFF666666) : AppColors.grey.withValues(alpha: 0.5);
+
     return ListTile(
-      leading: Icon(icon, color: iconColor, size: 24),
+      leading: Icon(icon, color: iconColor ?? defaultIconColor, size: 24),
       title: Text(
         label,
         style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: labelColor,
+          color: textColor ?? defaultTextColor,
         ),
       ),
-      trailing: Icon(Icons.chevron_right, color: grey.withOpacity(0.5), size: 20),
+      trailing: Icon(PhosphorIcons.caretRight(), color: trailColor, size: 20),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       horizontalTitleGap: 8,
