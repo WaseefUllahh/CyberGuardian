@@ -47,7 +47,7 @@ class LearningContent {
           id: 'l_intro_2',
           title: 'Common Threat Types',
           readingTimeMinutes: 7,
-          youtubeVideoId: 'yr8iHq7zDkE',
+          youtubeVideoId: 'uWZ6waqaH30',
           content: [
             LessonSection(type: SectionType.heading, content: 'Know Your Enemy'),
             LessonSection(type: SectionType.text, content: 'To defend yourself, you must know what you are defending against. Threats come in many forms, each designed to trick you or exploit software vulnerabilities.'),
@@ -134,7 +134,7 @@ class LearningContent {
           id: 'l_phish_1',
           title: 'The Psychology of Phishing',
           readingTimeMinutes: 5,
-          youtubeVideoId: 'Y7zNIGMELQ4',
+          youtubeVideoId: '-YD1X1sjxuo',
           content: [
             LessonSection(type: SectionType.heading, content: 'Hacking the Human Mind'),
             LessonSection(type: SectionType.text, content: 'Phishing doesn\'t rely on technical genius; it relies on psychology. Attackers want you to act quickly without thinking.'),
@@ -149,7 +149,7 @@ class LearningContent {
           id: 'l_phish_2',
           title: 'Anatomy of a Fake Email',
           readingTimeMinutes: 8,
-          youtubeVideoId: '8l4-8I3vJ9w',
+          youtubeVideoId: '7hwGbhD5O4Q',
           content: [
             LessonSection(type: SectionType.heading, content: 'Spotting the Fakes'),
             LessonSection(type: SectionType.text, content: 'Attackers are getting better at mimicking real brands, but they always leave clues.'),
@@ -210,7 +210,7 @@ class LearningContent {
           id: 'l_pass_1',
           title: 'How Passwords Get Cracked',
           readingTimeMinutes: 5,
-          youtubeVideoId: '3njO3P22wV8',
+          youtubeVideoId: '68RCAfjEPt8',
           content: [
             LessonSection(type: SectionType.heading, content: 'Brute Force & Dictionary Attacks'),
             LessonSection(type: SectionType.text, content: 'Hackers do not guess passwords manually. They use automated software capable of guessing billions of passwords per second.'),
@@ -223,7 +223,7 @@ class LearningContent {
           id: 'l_pass_2',
           title: 'The Power of Passphrases',
           readingTimeMinutes: 4,
-          youtubeVideoId: 'U_P23SqXaC8',
+          youtubeVideoId: 'lPdLKtUclX0',
           content: [
             LessonSection(type: SectionType.heading, content: 'Length > Complexity'),
             LessonSection(type: SectionType.text, content: 'A password like "Tr0ub4dor&3" is hard for a human to remember, but easy for a computer to crack. A passphrase like "correct horse battery staple" is easy for a human to remember, but incredibly hard for a computer to crack due to its length.'),
@@ -234,7 +234,7 @@ class LearningContent {
           id: 'l_pass_3',
           title: 'Password Managers & MFA',
           readingTimeMinutes: 6,
-          youtubeVideoId: 'vC3I8Tebp6k',
+          youtubeVideoId: 'w68BBPDAWr8',
           content: [
             LessonSection(type: SectionType.heading, content: 'Your Digital Vault'),
             LessonSection(type: SectionType.text, content: 'You should have a unique, long, random password for every single account. Since human brains cannot remember 100 random passwords, you need a Password Manager (e.g., Bitwarden, 1Password, Google Password Manager).'),
@@ -304,7 +304,7 @@ class LearningContent {
           id: 'l_browse_2',
           title: 'Public Wi-Fi Risks',
           readingTimeMinutes: 6,
-          youtubeVideoId: 'k7Bv6_V82wA',
+          youtubeVideoId: 'ZtzLEWJ9tN4',
           content: [
             LessonSection(type: SectionType.heading, content: 'The Coffee Shop Danger'),
             LessonSection(type: SectionType.text, content: 'Public Wi-Fi networks (airports, cafes, hotels) are inherently insecure. Attackers on the same network can potentially intercept your data.'),
