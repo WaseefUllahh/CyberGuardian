@@ -58,10 +58,14 @@ class DashboardDrawer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      'assets/images/cyberguardian_logo.png',
-                      width: 72,
-                      height: 72,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/cyberguardian_logo.png',
+                        width: 72,
+                        height: 72,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
                     const SizedBox(height: 14),
                     Text(
@@ -87,7 +91,15 @@ class DashboardDrawer extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/cyberguardian_logo.png', height: 24, width: 24),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.asset(
+                              'assets/images/cyberguardian_logo.png',
+                              height: 24,
+                              width: 24,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           const Text(
                             'Protected',

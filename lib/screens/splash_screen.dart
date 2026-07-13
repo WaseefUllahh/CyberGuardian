@@ -45,10 +45,14 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // CyberGuardian logo
-            Image.asset(
-              'assets/images/cyberguardian_logo.png',
-              width: 200,
-              height: 200,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.asset(
+                'assets/images/cyberguardian_logo.png',
+                width: 200,
+                height: 200,
+                filterQuality: FilterQuality.high,
+              ),
             ),
             SizedBox(height: 16),
             Text(

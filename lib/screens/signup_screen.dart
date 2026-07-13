@@ -68,11 +68,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: const BoxDecoration(
                   color: Colors.transparent,
                 ),
-                child: Image.asset(
-                  'assets/images/cyberguardian_logo.png',
-                  width: 56,
-                  height: 56,
-                  errorBuilder: (c, e, s) => Icon(PhosphorIcons.shieldCheck(), color: AppColors.brandGreen, size: 56),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'assets/images/cyberguardian_logo.png',
+                    width: 56,
+                    height: 56,
+                    filterQuality: FilterQuality.high,
+                    errorBuilder: (c, e, s) => Icon(PhosphorIcons.shieldCheck(), color: AppColors.brandGreen, size: 56),
+                  ),
                 ),
               ),
             ],

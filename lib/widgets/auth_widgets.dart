@@ -138,10 +138,15 @@ class AuthHeader extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 8),
-        Image.asset(
-          'assets/images/cyberguardian_logo.png',
-          width: 120,
-          height: 120,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.asset(
+            'assets/images/cyberguardian_logo.png',
+            width: 56,
+            height: 56,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (c, e, s) => Icon(PhosphorIcons.shieldCheck(), color: AppColors.brandGreen, size: 56),
+          ),
         ),
         const SizedBox(height: 16),
         Text(title,
