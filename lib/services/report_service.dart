@@ -31,17 +31,20 @@ class ReportService {
   }
 
   Stream<List<ReportModel>> getUserReports() {
-    final user = _auth.currentUser;
-    if (user == null) return const Stream.empty();
-
-    return _db
-        .collection('reports')
-        .where('userId', isEqualTo: user.uid)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
-            .toList());
+    return _auth.authStateChanges().asyncExpand((user) {
+      if (user == null) return const Stream.empty();
+      return _db
+          .collection('reports')
+          .where('userId', isEqualTo: user.uid)
+          .snapshots()
+          .map((snapshot) {
+            final docs = snapshot.docs
+                .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
+                .toList();
+            docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            return docs;
+          });
+    });
   }
   
   Stream<List<ReportModel>> getAllReports() {

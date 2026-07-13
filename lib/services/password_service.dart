@@ -29,16 +29,19 @@ class PasswordService {
   }
 
   Stream<List<PasswordCheckModel>> getUserPasswordChecks() {
-    final user = _auth.currentUser;
-    if (user == null) return const Stream.empty();
-
-    return _db
-        .collection('password_checks')
-        .where('userId', isEqualTo: user.uid)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => PasswordCheckModel.fromMap(doc.data(), doc.id))
-            .toList());
+    return _auth.authStateChanges().asyncExpand((user) {
+      if (user == null) return const Stream.empty();
+      return _db
+          .collection('password_checks')
+          .where('userId', isEqualTo: user.uid)
+          .snapshots()
+          .map((snapshot) {
+            final docs = snapshot.docs
+                .map((doc) => PasswordCheckModel.fromMap(doc.data(), doc.id))
+                .toList();
+            docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            return docs;
+          });
+    });
   }
 }

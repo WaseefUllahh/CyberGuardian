@@ -26,8 +26,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveChanges() async {
-    final uid = AuthService().currentUid;
-    if (uid == null) return;
+    final user = await AuthService().getCurrentUserData();
+    if (user == null) return;
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -35,7 +35,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     setState(() => _isLoading = true);
-    await ProfileService().updateProfile(uid, name: name);
+    await ProfileService().updateProfile(user.uid, name: name);
     if (mounted) {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(

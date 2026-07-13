@@ -130,14 +130,14 @@ class AuthService {
   }
 
   Stream<UserModel?> getCurrentUserDataStream() {
-    final uid = currentUid;
-    if (uid == null) return const Stream.empty();
-    
-    return _db.collection('users').doc(uid).snapshots().map((doc) {
-      if (doc.exists && doc.data() != null) {
-        return UserModel.fromMap(doc.data()!);
-      }
-      return null;
+    return _auth.authStateChanges().asyncExpand((firebaseUser) {
+      if (firebaseUser == null) return Stream.value(null);
+      return _db.collection('users').doc(firebaseUser.uid).snapshots().map((doc) {
+        if (doc.exists && doc.data() != null) {
+          return UserModel.fromMap(doc.data()!);
+        }
+        return null;
+      });
     });
   }
 

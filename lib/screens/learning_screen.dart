@@ -206,7 +206,7 @@ class _LearningScreenState extends State<LearningScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CourseDetailScreen(course: course, progress: progress),
+            builder: (context) => CourseDetailScreen(course: course),
           ),
         );
       },

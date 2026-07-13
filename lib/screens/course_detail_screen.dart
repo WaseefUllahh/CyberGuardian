@@ -5,26 +5,41 @@ import '../models/learning_models.dart';
 import '../models/learning_progress.dart';
 import '../widgets/learning_ui_widgets.dart';
 import '../services/learning_service.dart';
+import '../services/auth_service.dart';
 import '../services/certificate_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'lesson_screen.dart';
 import 'quiz_screen.dart';
 
 class CourseDetailScreen extends StatelessWidget {
   final Course course;
-  final LearningProgress progress;
 
-  const CourseDetailScreen({super.key, required this.course, required this.progress});
+  // BUG 3 FIX: progress is no longer a constructor parameter.
+  // It is fetched live via StreamBuilder so the UI auto-updates when
+  // a lesson is completed and the user presses Back.
+  const CourseDetailScreen({super.key, required this.course});
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<LearningProgress?>(
+      stream: LearningService().getProgressStream(),
+      builder: (context, snapshot) {
+        // Use a default while loading or if null
+        final progress = snapshot.data ?? LearningProgress(uid: '');
+        return _buildContent(context, progress);
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context, LearningProgress progress) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F5F5);
     final textColor = isDark ? Colors.white : AppColors.dark;
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
 
-    int completedLessons = course.lessons.where((l) => progress.isLessonCompleted(l.id)).length;
-    double percent = course.lessons.isNotEmpty ? (completedLessons / course.lessons.length) : 0.0;
+    final completedLessons =
+        course.lessons.where((l) => progress.isLessonCompleted(l.id)).length;
+    final percent =
+        course.lessons.isNotEmpty ? (completedLessons / course.lessons.length) : 0.0;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -39,7 +54,10 @@ class CourseDetailScreen extends StatelessWidget {
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.brandGreen, AppColors.brandGreen.withValues(alpha: 0.7)],
+                    colors: [
+                      AppColors.brandGreen,
+                      AppColors.brandGreen.withValues(alpha: 0.7),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -47,7 +65,11 @@ class CourseDetailScreen extends StatelessWidget {
                 child: Center(
                   child: Hero(
                     tag: 'course_icon_${course.id}',
-                    child: Icon(course.icon, size: 80, color: Colors.white.withValues(alpha: 0.9)),
+                    child: Icon(
+                      course.icon,
+                      size: 80,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
                   ),
                 ),
               ),
@@ -57,7 +79,7 @@ class CourseDetailScreen extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          
+
           // ── Course Info ──
           SliverToBoxAdapter(
             child: Padding(
@@ -70,26 +92,44 @@ class CourseDetailScreen extends StatelessWidget {
                     children: [
                       BadgeWidget(
                         text: course.difficulty,
-                        color: course.difficulty == 'Beginner' ? Colors.blue : (course.difficulty == 'Intermediate' ? Colors.orange : Colors.red),
+                        color: course.difficulty == 'Beginner'
+                            ? Colors.blue
+                            : (course.difficulty == 'Intermediate'
+                                ? Colors.orange
+                                : Colors.red),
                       ),
                       Row(
                         children: [
-                          Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), color: Colors.amber, size: 16),
+                          Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
+                              color: Colors.amber, size: 16),
                           const SizedBox(width: 4),
-                          Text('${course.xpReward} XP', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.amber)),
+                          Text(
+                            '${course.xpReward} XP',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.amber),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(course.title, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(
+                    course.title,
+                    style: TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+                  ),
                   const SizedBox(height: 8),
-                  Text(course.subtitle, style: const TextStyle(fontSize: 14, color: Colors.grey, height: 1.4)),
+                  Text(
+                    course.subtitle,
+                    style: const TextStyle(
+                        fontSize: 14, color: Colors.grey, height: 1.4),
+                  ),
                   const SizedBox(height: 20),
 
-                  // Progress
+                  // Progress bar
                   if (percent > 0) ...[
-                    AnimatedCourseProgress(progress: percent, color: AppColors.brandGreen),
+                    AnimatedCourseProgress(
+                        progress: percent, color: AppColors.brandGreen),
                     const SizedBox(height: 24),
                   ],
 
@@ -97,54 +137,90 @@ class CourseDetailScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildInfoItem(PhosphorIcons.bookOpen(), '${course.totalLessons} Lessons'),
-                      _buildInfoItem(PhosphorIcons.clock(), '${course.durationMinutes} min'),
-                      _buildInfoItem(PhosphorIcons.question(), '${course.totalQuizzes} Quizzes'),
+                      _buildInfoItem(PhosphorIcons.bookOpen(),
+                          '${course.totalLessons} Lessons'),
+                      _buildInfoItem(
+                          PhosphorIcons.clock(), '${course.durationMinutes} min'),
+                      _buildInfoItem(PhosphorIcons.question(),
+                          '${course.totalQuizzes} Quizzes'),
                     ],
                   ),
                   const SizedBox(height: 24),
 
                   // Description
-                  Text('About this course', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                  Text('About this course',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor)),
                   const SizedBox(height: 12),
-                  Text(course.description, style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[400] : Colors.grey[800], height: 1.5)),
+                  Text(
+                    course.description,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: isDark ? Colors.grey[400] : Colors.grey[800],
+                        height: 1.5),
+                  ),
                   const SizedBox(height: 24),
 
-                  // Syllabus
-                  Text('Syllabus', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                  // Syllabus header
+                  Text('Syllabus',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor)),
                   const SizedBox(height: 12),
                 ],
               ),
             ),
           ),
-          
+
           // ── Lessons List ──
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final lesson = course.lessons[index];
                 final isCompleted = progress.isLessonCompleted(lesson.id);
-                // The first lesson is always unlocked. Others unlock if the previous is completed.
-                final isUnlocked = index == 0 || progress.isLessonCompleted(course.lessons[index - 1].id);
+                final isUnlocked = index == 0 ||
+                    progress.isLessonCompleted(course.lessons[index - 1].id);
 
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                   decoration: BoxDecoration(
                     color: cardColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isUnlocked ? AppColors.brandGreen.withValues(alpha: 0.3) : Colors.transparent),
-                    boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4)],
+                    border: Border.all(
+                        color: isUnlocked
+                            ? AppColors.brandGreen.withValues(alpha: 0.3)
+                            : Colors.transparent),
+                    boxShadow: isDark
+                        ? []
+                        : [
+                            BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.02),
+                                blurRadius: 4)
+                          ],
                   ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: isCompleted ? AppColors.brandGreen.withValues(alpha: 0.1) : (isDark ? const Color(0xFF2A2A2A) : const Color(0xFFEEEEEE)),
+                        color: isCompleted
+                            ? AppColors.brandGreen.withValues(alpha: 0.1)
+                            : (isDark
+                                ? const Color(0xFF2A2A2A)
+                                : const Color(0xFFEEEEEE)),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        isCompleted ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : (isUnlocked ? PhosphorIcons.play() : PhosphorIcons.lockKey()),
+                        isCompleted
+                            ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                            : (isUnlocked
+                                ? PhosphorIcons.play()
+                                : PhosphorIcons.lockKey()),
                         color: isCompleted ? AppColors.brandGreen : Colors.grey,
                       ),
                     ),
@@ -158,17 +234,20 @@ class CourseDetailScreen extends StatelessWidget {
                     ),
                     subtitle: Text(
                       '${lesson.readingTimeMinutes} min read',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style:
+                          const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     trailing: isUnlocked
-                        ? Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.brandGreen)
+                        ? Icon(Icons.arrow_forward_ios,
+                            size: 14, color: AppColors.brandGreen)
                         : null,
                     onTap: isUnlocked
                         ? () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LessonScreen(course: course, lesson: lesson),
+                                builder: (context) => LessonScreen(
+                                    course: course, lesson: lesson),
                               ),
                             );
                           }
@@ -179,43 +258,75 @@ class CourseDetailScreen extends StatelessWidget {
               childCount: course.lessons.length,
             ),
           ),
-          
+
           // ── Quizzes List ──
           if (course.quizzes.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 24, bottom: 12),
-                child: Text('Quizzes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 24, bottom: 12),
+                child: Text('Quizzes',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: textColor)),
               ),
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final quiz = course.quizzes[index];
-                  // Quizzes are unlocked if all lessons are complete.
-                  final isUnlocked = progress.completedLessonIds.length >= course.lessons.length; 
+
+                  // BUG 4 FIX: only count lessons belonging to THIS course,
+                  // not the global completedLessonIds.length which counted
+                  // lessons from ALL courses and unlocked quizzes too early.
+                  final thisCourseCompleted = course.lessons
+                      .where((l) => progress.isLessonCompleted(l.id))
+                      .length;
+                  final isUnlocked = thisCourseCompleted >= course.lessons.length;
                   final previousScore = progress.quizScores[quiz.id] ?? 0;
                   final isPassed = previousScore >= quiz.passPercentage;
 
                   return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 6),
                     decoration: BoxDecoration(
                       color: cardColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: isUnlocked ? AppColors.brandGreen.withValues(alpha: 0.3) : Colors.transparent),
-                      boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4)],
+                      border: Border.all(
+                          color: isUnlocked
+                              ? AppColors.brandGreen.withValues(alpha: 0.3)
+                              : Colors.transparent),
+                      boxShadow: isDark
+                          ? []
+                          : [
+                              BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.02),
+                                  blurRadius: 4)
+                            ],
                     ),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       leading: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: isPassed ? AppColors.brandGreen.withValues(alpha: 0.1) : (isDark ? const Color(0xFF2A2A2A) : const Color(0xFFEEEEEE)),
+                          color: isPassed
+                              ? AppColors.brandGreen.withValues(alpha: 0.1)
+                              : (isDark
+                                  ? const Color(0xFF2A2A2A)
+                                  : const Color(0xFFEEEEEE)),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isPassed ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : (isUnlocked ? PhosphorIcons.question() : PhosphorIcons.lockKey()),
-                          color: isPassed ? AppColors.brandGreen : Colors.grey,
+                          isPassed
+                              ? PhosphorIcons.checkCircle(
+                                  PhosphorIconsStyle.fill)
+                              : (isUnlocked
+                                  ? PhosphorIcons.question()
+                                  : PhosphorIcons.lockKey()),
+                          color:
+                              isPassed ? AppColors.brandGreen : Colors.grey,
                         ),
                       ),
                       title: Text(
@@ -227,25 +338,32 @@ class CourseDetailScreen extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        isPassed ? 'Passed (Score: $previousScore%)' : (isUnlocked ? '${quiz.passPercentage}% to pass' : 'Complete lessons to unlock'),
-                        style: TextStyle(fontSize: 12, color: isPassed ? AppColors.brandGreen : Colors.grey),
+                        isPassed
+                            ? 'Passed (Score: $previousScore%)'
+                            : (isUnlocked
+                                ? '${quiz.passPercentage}% to pass'
+                                : 'Complete lessons to unlock'),
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: isPassed
+                                ? AppColors.brandGreen
+                                : Colors.grey),
                       ),
                       trailing: isUnlocked
-                          ? Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.brandGreen)
+                          ? Icon(Icons.arrow_forward_ios,
+                              size: 14, color: AppColors.brandGreen)
                           : null,
                       onTap: isUnlocked
                           ? () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => QuizScreen(course: course, quiz: quiz),
+                                  builder: (context) =>
+                                      QuizScreen(course: course, quiz: quiz),
                                 ),
-                              ).then((_) {
-                                // If they passed, mark course as complete
-                                if (progress.quizScores[quiz.id] != null && progress.quizScores[quiz.id]! >= quiz.passPercentage) {
-                                  LearningService().markCourseCompleted(course.id);
-                                }
-                              });
+                              );
+                              // BUG 6 FIX: markCourseCompleted is now handled
+                              // inside QuizScreen._finishQuiz() with fresh data.
                             }
                           : null,
                     ),
@@ -255,7 +373,7 @@ class CourseDetailScreen extends StatelessWidget {
               ),
             ),
           ],
-          
+
           // ── Certificate Button ──
           if (progress.isCourseCompleted(course.id))
             SliverToBoxAdapter(
@@ -265,24 +383,35 @@ class CourseDetailScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton.icon(
+                    // BUG 5 FIX: use AuthService().getCurrentUserData() instead
+                    // of FirebaseAuth.instance.currentUser which is null on web.
                     onPressed: () async {
-                      final user = FirebaseAuth.instance.currentUser;
-                      final name = user?.displayName ?? user?.email ?? 'Student';
+                      final userData = await AuthService().getCurrentUserData();
+                      final name = userData?.name ?? 'Student';
                       final date = DateTime.now();
-                      final dateStr = '${date.month}/${date.day}/${date.year}';
-                      await CertificateService().generateAndShowCertificate(name, course.title, dateStr);
+                      final dateStr =
+                          '${date.month}/${date.day}/${date.year}';
+                      await CertificateService()
+                          .generateAndShowCertificate(name, course.title, dateStr);
                     },
-                    icon: Icon(PhosphorIcons.certificate(PhosphorIconsStyle.fill), color: Colors.white),
-                    label: const Text('View Certificate', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    icon: Icon(
+                        PhosphorIcons.certificate(PhosphorIconsStyle.fill),
+                        color: Colors.white),
+                    label: const Text('View Certificate',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
               ),
             ),
-            
+
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
@@ -294,7 +423,8 @@ class CourseDetailScreen extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.brandGreen, size: 24),
         const SizedBox(height: 6),
-        Text(text, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(text,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
       ],
     );
   }

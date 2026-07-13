@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,18 +75,25 @@ class UrlScanService {
     }
   }
 
+  /// Streams the current user's scans.
+  /// Uses [authStateChanges] + [asyncExpand] instead of [currentUser] so it
+  /// works correctly on Flutter Web, where Firebase Auth restores sessions
+  /// asynchronously — meaning [currentUser] is null at widget build time.
   Stream<List<ScanModel>> getUserScans() {
-    final user = _auth.currentUser;
-    if (user == null) return const Stream.empty();
-
-    return _db
-        .collection('url_scans')
-        .where('userId', isEqualTo: user.uid)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ScanModel.fromMap(doc.data(), doc.id))
-            .toList());
+    return _auth.authStateChanges().asyncExpand((user) {
+      if (user == null) return const Stream.empty();
+      return _db
+          .collection('url_scans')
+          .where('userId', isEqualTo: user.uid)
+          .snapshots()
+          .map((snapshot) {
+            final docs = snapshot.docs
+                .map((doc) => ScanModel.fromMap(doc.data(), doc.id))
+                .toList();
+            docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            return docs;
+          });
+    });
   }
   
   Stream<List<ScanModel>> getAllScans() {

@@ -6,20 +6,22 @@ class LearningService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Get stream of learning progress
+  // Get stream of learning progress.
+  // Uses authStateChanges() so it works on Flutter Web where currentUser
+  // is null at widget build time (auth restores asynchronously).
   Stream<LearningProgress?> getProgressStream() {
-    final user = _auth.currentUser;
-    if (user == null) return const Stream.empty();
-
-    return _db
-        .collection('learning_progress')
-        .doc(user.uid)
-        .snapshots()
-        .map((snapshot) {
-      if (snapshot.exists) {
-        return LearningProgress.fromMap(snapshot.data()!, snapshot.id);
-      }
-      return LearningProgress(uid: user.uid);
+    return _auth.authStateChanges().asyncExpand((user) {
+      if (user == null) return const Stream.empty();
+      return _db
+          .collection('learning_progress')
+          .doc(user.uid)
+          .snapshots()
+          .map((snapshot) {
+        if (snapshot.exists) {
+          return LearningProgress.fromMap(snapshot.data()!, snapshot.id);
+        }
+        return LearningProgress(uid: user.uid);
+      });
     });
   }
 

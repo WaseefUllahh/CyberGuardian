@@ -53,12 +53,19 @@ class _QuizScreenState extends State<QuizScreen> {
     });
 
     await _learningService.saveQuizScore(
-      widget.quiz.id, 
-      widget.course.id, 
-      _score, 
-      widget.quiz.passPercentage, 
-      widget.quiz.xpReward
+      widget.quiz.id,
+      widget.course.id,
+      _score,
+      widget.quiz.passPercentage,
+      widget.quiz.xpReward,
     );
+
+    // BUG 6 FIX: mark course complete here with fresh data — not from the
+    // stale progress object that CourseDetailScreen was checking before.
+    final passed = _score >= widget.quiz.passPercentage;
+    if (passed) {
+      await _learningService.markCourseCompleted(widget.course.id);
+    }
 
     setState(() {
       _isSaving = false;

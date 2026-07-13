@@ -140,6 +140,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
+                  if (snapshot.hasError) {
+                    return Text(
+                      'Could not load scans. Please check your connection.',
+                      style: TextStyle(color: Colors.red.shade400, fontSize: 13),
+                    );
+                  }
                   final scans = snapshot.data ?? [];
                   if (scans.isEmpty) {
                     return Text('No recent scans.', style: TextStyle(color: subtitleColor));
@@ -151,14 +157,21 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     itemBuilder: (context, index) {
                       final scan = scans[index];
                       final bool isSafe = scan.result.toLowerCase() == 'safe';
-                      final icon = scan.url.startsWith('http') || scan.url.contains('www') 
+                      final bool isUrl = scan.url.startsWith('http') || scan.url.contains('www');
+                      final bool isEmail = scan.url.contains('@');
+                      final IconData icon = isUrl
                           ? PhosphorIcons.globeHemisphereWest()
-                          : (scan.url.contains('@') ? PhosphorIcons.envelopeSimple() : PhosphorIcons.chatCircleText());
+                          : (isEmail
+                              ? PhosphorIcons.envelopeSimple()
+                              : PhosphorIcons.chatCircleText());
+                      final String scanTypeLabel = isUrl
+                          ? 'URL Scan'
+                          : (isEmail ? 'Email Scan' : 'SMS Scan');
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: RecentScanItem(
                           title: scan.url,
-                          type: 'Scan',
+                          type: scanTypeLabel,
                           status: scan.result,
                           color: isSafe ? green : Colors.red,
                           icon: icon,

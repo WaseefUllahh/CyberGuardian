@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../utils/app_colors.dart';
 import '../utils/user_store.dart';
+import '../services/auth_service.dart';
 
 class DashboardDrawer extends StatelessWidget {
   const DashboardDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final user = UserStore().currentUser;
-    final name = user?.name ?? 'User';
-    final email = user?.email ?? 'user@email.com';
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return StreamBuilder(
+      stream: AuthService().getCurrentUserDataStream(),
+      builder: (context, snapshot) {
+        final user = snapshot.data ?? UserStore().currentUser;
+        final name = user?.name ?? 'User';
+        final email = user?.email ?? 'user@email.com';
+        final isDark = Theme.of(context).brightness == Brightness.dark;
     final drawerBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
     final textColor = isDark ? Colors.white : AppColors.dark;
     final subtitleColor = isDark ? const Color(0xFFAAAAAA) : AppColors.grey;
@@ -165,6 +169,8 @@ class DashboardDrawer extends StatelessWidget {
         ],
       ),
     );
+      }, // end StreamBuilder builder
+    ); // end StreamBuilder
   }
 
   Widget _drawerNavItem(

@@ -33,9 +33,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   Future<void> _toggle(bool value) async {
     setState(() => _alertsEnabled = value);
-    final uid = AuthService().currentUid;
-    if (uid != null) {
-      await ProfileService().updateProfile(uid, alertsEnabled: value);
+    final user = await AuthService().getCurrentUserData();
+    if (user != null) {
+      await ProfileService().updateProfile(user.uid, alertsEnabled: value);
     }
   }
 

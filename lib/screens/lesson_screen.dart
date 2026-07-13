@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import '../utils/app_colors.dart';
 import '../models/learning_models.dart';
 import '../services/learning_service.dart';
@@ -24,31 +24,35 @@ class _LessonScreenState extends State<LessonScreen> {
   void initState() {
     super.initState();
     _ytController = YoutubePlayerController(
-      initialVideoId: widget.lesson.youtubeVideoId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: false,
+      params: const YoutubePlayerParams(
+        showFullscreenButton: true,
         mute: false,
+        showControls: true,
+        strictRelatedVideos: true,
       ),
     );
+    _ytController.cueVideoById(videoId: widget.lesson.youtubeVideoId);
   }
 
   @override
   void dispose() {
-    _ytController.dispose();
+    _ytController.close();
     super.dispose();
   }
 
   Future<void> _completeLesson() async {
     setState(() => _isSaving = true);
-    // Give some base XP for completing a lesson, e.g., 20 XP
     await _learningService.markLessonCompleted(widget.lesson.id, 20);
     setState(() => _isSaving = false);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lesson completed! +20 XP'), backgroundColor: Colors.green),
+        const SnackBar(
+          content: Text('Lesson completed! +20 XP'),
+          backgroundColor: Colors.green,
+        ),
       );
-      Navigator.pop(context); // Go back to course detail
+      Navigator.pop(context);
     }
   }
 
@@ -71,38 +75,44 @@ class _LessonScreenState extends State<LessonScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // YouTube Player
+              // YouTube Player — web-compatible via iframe (youtube_player_iframe v6)
               YoutubePlayer(
                 controller: _ytController,
-                showVideoProgressIndicator: true,
-                progressIndicatorColor: AppColors.brandGreen,
-                progressColors: ProgressBarColors(
-                  playedColor: AppColors.brandGreen,
-                  handleColor: AppColors.brandGreen,
-                ),
+                aspectRatio: 16 / 9,
               ),
-              
+
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.lesson.title, style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: textColor)),
+                    Text(
+                      widget.lesson.title,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(PhosphorIcons.clock(), size: 16, color: Colors.grey),
                         const SizedBox(width: 4),
-                        Text('${widget.lesson.readingTimeMinutes} min read', style: const TextStyle(color: Colors.grey)),
+                        Text(
+                          '${widget.lesson.readingTimeMinutes} min read',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
                     const Divider(),
                     const SizedBox(height: 24),
 
-                    // Render Content
-                    ...widget.lesson.content.map((section) => _buildSection(section, isDark)),
-                    
+                    // Render lesson content sections
+                    ...widget.lesson.content
+                        .map((section) => _buildSection(section, isDark)),
+
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
@@ -111,11 +121,20 @@ class _LessonScreenState extends State<LessonScreen> {
                         onPressed: _isSaving ? null : _completeLesson,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.brandGreen,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: _isSaving 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Mark as Completed', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                        child: _isSaving
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : const Text(
+                                'Mark as Completed',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -131,6 +150,7 @@ class _LessonScreenState extends State<LessonScreen> {
 
   Widget _buildSection(LessonSection section, bool isDark) {
     final textColor = isDark ? Colors.white : AppColors.dark;
+    final bodyColor = isDark ? Colors.grey[300] : Colors.grey[800];
 
     switch (section.type) {
       case SectionType.heading:
@@ -138,39 +158,85 @@ class _LessonScreenState extends State<LessonScreen> {
           padding: const EdgeInsets.only(top: 16, bottom: 8),
           child: Text(
             section.content,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
           ),
         );
+
       case SectionType.text:
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Text(
             section.content,
-            style: TextStyle(fontSize: 15, color: isDark ? Colors.grey[300] : Colors.grey[800], height: 1.6),
+            style: TextStyle(fontSize: 15, color: bodyColor, height: 1.6),
           ),
         );
+
       case SectionType.bullet:
         return Padding(
           padding: const EdgeInsets.only(bottom: 8, left: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('• ', style: TextStyle(fontSize: 16, color: AppColors.brandGreen, fontWeight: FontWeight.bold)),
+              Text(
+                '• ',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.brandGreen,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               Expanded(
                 child: Text(
                   section.content,
-                  style: TextStyle(fontSize: 15, color: isDark ? Colors.grey[300] : Colors.grey[800], height: 1.5),
+                  style: TextStyle(fontSize: 15, color: bodyColor, height: 1.5),
                 ),
               ),
             ],
           ),
         );
+
       case SectionType.tip:
-        return _buildCallout(section.content, PhosphorIcons.lightbulb(PhosphorIconsStyle.fill), Colors.amber, isDark);
+        return _buildCallout(
+          section.content,
+          PhosphorIcons.lightbulb(PhosphorIconsStyle.fill),
+          Colors.amber,
+          isDark,
+        );
+
       case SectionType.warning:
-        return _buildCallout(section.content, PhosphorIcons.warning(PhosphorIconsStyle.fill), Colors.red, isDark);
-      default:
-        return const SizedBox();
+        return _buildCallout(
+          section.content,
+          PhosphorIcons.warning(PhosphorIconsStyle.fill),
+          Colors.red,
+          isDark,
+        );
+
+      // BUG 7 FIX: handle image section type (was silently dropped before)
+      case SectionType.image:
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              section.content,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                height: 160,
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFEEEEEE),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Icon(PhosphorIcons.image(), color: Colors.grey, size: 40),
+                ),
+              ),
+            ),
+          ),
+        );
     }
   }
 
@@ -191,7 +257,11 @@ class _LessonScreenState extends State<LessonScreen> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 14, color: isDark ? Colors.white : AppColors.dark, height: 1.5),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.white : AppColors.dark,
+                height: 1.5,
+              ),
             ),
           ),
         ],
