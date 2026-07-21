@@ -50,16 +50,22 @@ class AdminActivityLogView extends StatelessWidget {
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                         leading: CircleAvatar(
-                          backgroundColor: _getActionColor(log.action).withOpacity(0.1),
+                          backgroundColor: _getActionColor(log.action).withValues(alpha: 0.1),
                           child: Icon(
                             _getActionIcon(log.action),
                             color: _getActionColor(log.action),
                           ),
                         ),
-                        title: Row(
+                      title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(log.action, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
+                            Flexible(
+                              child: Text(log.action,
+                                style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
                             Text('$dateString $timeString', style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
                           ],
                         ),

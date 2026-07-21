@@ -365,9 +365,12 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.white70, size: 18),
           const SizedBox(height: 4),
-          Text(value,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(value,
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+          ),
           Text(label,
               style: const TextStyle(color: Colors.white60, fontSize: 11)),
         ],

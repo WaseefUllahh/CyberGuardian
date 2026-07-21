@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/auth_utils.dart';
+import '../services/report_service.dart';
 
 class SubmitReportScreen extends StatefulWidget {
   const SubmitReportScreen({super.key});
@@ -36,7 +37,7 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
     super.dispose();
   }
 
-  void _submitReport() {
+  void _submitReport() async {
     if (!_formKey.currentState!.validate()) return;
 
     // Ensure at least one category is selected
@@ -57,24 +58,43 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
 
     setState(() => _loading = true);
 
-    // Simulate network delay
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (!mounted) return;
-      setState(() => _loading = false);
+    try {
+      // Save directly to Firestore via ReportService
+      await ReportService().submitReport(
+        _titleController.text.trim(),
+        selectedCategories.join(', '),
+        _descriptionController.text.trim(),
+      );
 
-      // Construct report data
-      final reportData = {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('✅ Report submitted successfully!'),
+          backgroundColor: green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      // Return data to the previous screen
+      Navigator.pop(context, {
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'time': 'Just now',
-        'status': 'Under Review',
+        'status': 'Pending',
         'severity': _severity,
         'categories': selectedCategories,
-      };
-
-      // Return data to the previous screen using Navigator.pop
-      Navigator.pop(context, reportData);
-    });
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to submit report: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override

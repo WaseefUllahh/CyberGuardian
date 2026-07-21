@@ -50,6 +50,35 @@ class AdminService {
             .toList());
   }
 
+  /// Returns a live map of scan type → count for the pie chart.
+  /// Groups by provider field: SMS, Email, Password, or URL (default).
+  Stream<Map<String, int>> getScanTypeDistribution() {
+    return _db
+        .collection('url_scans')
+        .snapshots()
+        .map((snapshot) {
+      final Map<String, int> counts = {
+        'URL': 0,
+        'SMS': 0,
+        'Email': 0,
+        'Password': 0,
+      };
+      for (final doc in snapshot.docs) {
+        final provider = (doc.data()['provider'] as String?) ?? '';
+        if (provider.contains('SMS')) {
+          counts['SMS'] = (counts['SMS'] ?? 0) + 1;
+        } else if (provider.contains('Email')) {
+          counts['Email'] = (counts['Email'] ?? 0) + 1;
+        } else if (provider.contains('Password')) {
+          counts['Password'] = (counts['Password'] ?? 0) + 1;
+        } else {
+          counts['URL'] = (counts['URL'] ?? 0) + 1;
+        }
+      }
+      return counts;
+    });
+  }
+
   // Returns data for charts: map of Day -> Count
   Stream<Map<int, int>> getDailyActivityStats() {
     return _db

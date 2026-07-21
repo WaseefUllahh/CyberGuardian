@@ -257,6 +257,16 @@ class _ReportsScreenState extends State<ReportsScreen>
                   itemBuilder: (context, index) {
                     final scan = scans[index];
                     final bool isSafe = scan.result.toLowerCase() == 'safe';
+                    final String scanType;
+                    if (scan.provider.contains('SMS')) {
+                      scanType = 'SMS';
+                    } else if (scan.provider.contains('Email')) {
+                      scanType = 'Email';
+                    } else if (scan.provider.contains('Password')) {
+                      scanType = 'Password';
+                    } else {
+                      scanType = 'URL';
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: ScanHistoryItem(
@@ -265,6 +275,7 @@ class _ReportsScreenState extends State<ReportsScreen>
                         time: _formatTime(scan.createdAt.toDate()),
                         status: scan.result,
                         statusColor: isSafe ? green : Colors.red,
+                        scanType: scanType,
                       ),
                     );
                   }

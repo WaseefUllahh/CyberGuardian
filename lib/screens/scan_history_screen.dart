@@ -128,12 +128,15 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
                 final scans = snapshot.data ?? [];
                 
                 final filteredHistory = scans.where((item) {
-                  final matchesSearch = item.url.toLowerCase().contains(_searchQuery.toLowerCase());
-                  // We map provider or fallback to URL since all current DB entries are generic VirusTotal
+                  final matchesSearch = item.url.toLowerCase().contains(_searchQuery.toLowerCase())
+                      || item.result.toLowerCase().contains(_searchQuery.toLowerCase())
+                      || item.provider.toLowerCase().contains(_searchQuery.toLowerCase());
+
                   String type = 'URL';
                   if (item.provider.contains('SMS')) type = 'SMS';
                   if (item.provider.contains('Email')) type = 'Email';
-                  
+                  if (item.provider.contains('Password')) type = 'Password';
+
                   final matchesFilter = _selectedFilter == 'All' || type == _selectedFilter;
                   return matchesSearch && matchesFilter;
                 }).toList();
@@ -149,6 +152,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
                     String type = 'URL';
                     if (item.provider.contains('SMS')) type = 'SMS';
                     if (item.provider.contains('Email')) type = 'Email';
+                    if (item.provider.contains('Password')) type = 'Password';
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),

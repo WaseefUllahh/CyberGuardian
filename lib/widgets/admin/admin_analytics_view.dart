@@ -29,7 +29,7 @@ class AdminAnalyticsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
             ),
             child: AspectRatio(
               aspectRatio: 1.5,
@@ -113,71 +113,89 @@ class AdminAnalyticsView extends StatelessWidget {
           const SizedBox(height: 24),
           Text('Scan Types Distribution', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
           const SizedBox(height: 16),
-          
+
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
             ),
-            child: Column(
-              children: [
-                AspectRatio(
-                  aspectRatio: 1.6,
-                  child: PieChart(
-                    PieChartData(
-                      sectionsSpace: 3,
-                      centerSpaceRadius: 55,
-                      sections: [
-                        PieChartSectionData(
-                          color: Colors.blue,
-                          value: 40,
-                          title: '40%',
-                          radius: 50,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+            child: StreamBuilder<Map<String, int>>(
+              stream: AdminService().getScanTypeDistribution(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 200,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final data = snapshot.data ?? {};
+                final total = data.values.fold(0, (a, b) => a + b);
+
+                if (total == 0) {
+                  return SizedBox(
+                    height: 160,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.pie_chart_outline, size: 56, color: Colors.grey.shade400),
+                          const SizedBox(height: 12),
+                          Text('No scan data yet', style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                final colors = [Colors.blue, Colors.green, Colors.orange, Colors.purple];
+                final keys = ['URL', 'SMS', 'Email', 'Password'];
+
+                final sections = <PieChartSectionData>[];
+                for (int i = 0; i < keys.length; i++) {
+                  final count = data[keys[i]] ?? 0;
+                  if (count == 0) continue;
+                  final pct = (count / total * 100).toStringAsFixed(0);
+                  sections.add(PieChartSectionData(
+                    color: colors[i],
+                    value: count.toDouble(),
+                    title: '$pct%',
+                    radius: 50,
+                    titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                  ));
+                }
+
+                return Column(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1.6,
+                      child: PieChart(
+                        PieChartData(
+                          sectionsSpace: 3,
+                          centerSpaceRadius: 55,
+                          sections: sections,
                         ),
-                        PieChartSectionData(
-                          color: Colors.green,
-                          value: 30,
-                          title: '30%',
-                          radius: 50,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        PieChartSectionData(
-                          color: Colors.orange,
-                          value: 15,
-                          title: '15%',
-                          radius: 50,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        PieChartSectionData(
-                          color: Colors.purple,
-                          value: 15,
-                          title: '15%',
-                          radius: 50,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 20,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        for (int i = 0; i < keys.length; i++)
+                          if ((data[keys[i]] ?? 0) > 0)
+                            _legendItem(colors[i], '${keys[i]} (${data[keys[i]]})', isDark),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Legend
-                Wrap(
-                  spacing: 20,
-                  runSpacing: 8,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    _legendItem(Colors.blue, 'URLs', isDark),
-                    _legendItem(Colors.green, 'Emails', isDark),
-                    _legendItem(Colors.orange, 'SMS', isDark),
-                    _legendItem(Colors.purple, 'Passwords', isDark),
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ),
+
         ],
       ),
     );

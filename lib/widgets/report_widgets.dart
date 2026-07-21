@@ -123,6 +123,7 @@ class ThreatItem extends StatelessWidget {
 class ScanHistoryItem extends StatelessWidget {
   final String url, type, time, status;
   final Color statusColor;
+  final String? scanType; // 'URL' | 'SMS' | 'Email' | 'Password'
 
   const ScanHistoryItem({
     super.key,
@@ -131,7 +132,17 @@ class ScanHistoryItem extends StatelessWidget {
     required this.time,
     required this.status,
     required this.statusColor,
+    this.scanType,
   });
+
+  IconData _iconForType() {
+    switch (scanType) {
+      case 'SMS':    return Icons.chat_bubble_outline;
+      case 'Email':  return Icons.email_outlined;
+      case 'Password': return Icons.lock_outline;
+      default:       return Icons.link; // URL
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +164,7 @@ class ScanHistoryItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              statusColor == green
-                  ? Icons.link
-                  : Icons.warning_amber_rounded,
+              _iconForType(),
               color: statusColor,
               size: 22,
             ),

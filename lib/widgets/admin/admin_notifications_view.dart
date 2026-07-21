@@ -65,7 +65,7 @@ class AdminNotificationsView extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isDark ? (isRead ? const Color(0xFF1E1E1E) : const Color(0xFF2A2A2A)) : (isRead ? Colors.white : const Color(0xFFF0FDF4)),
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10)],
                   border: Border.all(color: isDark ? const Color(0xFF333333) : const Color(0xFFEEEEEE)),
                 ),
                 child: Row(
@@ -74,7 +74,7 @@ class AdminNotificationsView extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(getTypeIcon(notif['type'] as String), color: color, size: 20),
@@ -87,7 +87,14 @@ class AdminNotificationsView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(notif['title'] as String, style: TextStyle(fontWeight: isRead ? FontWeight.w600 : FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : dark)),
+                              Expanded(
+                                child: Text(
+                                  notif['title'] as String,
+                                  style: TextStyle(fontWeight: isRead ? FontWeight.w600 : FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : dark),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
                               Text(notif['time'] as String, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade500 : Colors.grey.shade600)),
                             ],
                           ),

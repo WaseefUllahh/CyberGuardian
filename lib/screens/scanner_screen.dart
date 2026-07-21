@@ -5,6 +5,7 @@ import '../widgets/premium_icon.dart';
 import '../widgets/scanner_widgets.dart';
 import '../services/url_scan_service.dart';
 import '../models/scan_model.dart';
+import 'scan_history_screen.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -67,7 +68,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
           IconButton(
             icon: Icon(PhosphorIcons.clockCounterClockwise(), color: textColor),
             tooltip: 'Scan History',
-            onPressed: () {},
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ScanHistoryScreen()),
+            ),
           ),
         ],
       ),

@@ -4,8 +4,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../utils/app_colors.dart';
 import '../services/auth_service.dart';
 import '../services/report_service.dart';
+import '../services/url_scan_service.dart';
 import '../models/user_model.dart';
 import '../models/report_model.dart';
+import '../models/scan_model.dart';
 import '../widgets/dashboard_widgets.dart';
 import '../widgets/dashboard_drawer.dart';
 import '../services/profile_service.dart';
@@ -318,51 +320,111 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  String _formatRelativeTime(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'Just now';
+  }
+
   // ─── Recent Activity ────────────────────────────────────────────────────────
   Widget _buildRecentActivity(BuildContext context, bool isDark) {
-    // Mock recent activity for now. To be wired with Firebase.
-    final List<Map<String, String>> activities = [
-      {'title': 'URL Scanned', 'desc': 'example.com', 'time': '2 hrs ago', 'icon': 'url', 'risk': 'Safe'},
-      {'title': 'Password Checked', 'desc': 'P@ssw0rd', 'time': 'Yesterday', 'icon': 'pass', 'risk': 'Weak'},
-    ];
+    return StreamBuilder<List<ScanModel>>(
+      stream: UrlScanService().getUserScans(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: Padding(
+            padding: EdgeInsets.all(24),
+            child: CircularProgressIndicator(),
+          ));
+        }
 
-    return Column(
-      children: activities.map((activity) {
-        final icon = activity['icon'] == 'url' ? PhosphorIcons.globe() : PhosphorIcons.vault();
-        final color = activity['risk'] == 'Safe' ? AppColors.brandGreen : Colors.orange;
-        
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: isDark ? const Color(0xFF333333) : Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, color: color),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(activity['title']!, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.dark)),
-                    Text(activity['desc']!, style: TextStyle(fontSize: 12, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey)),
-                  ],
-                ),
+        final scans = (snapshot.data ?? []).take(3).toList();
+
+        if (scans.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                'No recent scans. Run your first scan!',
+                style: TextStyle(color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+            ),
+          );
+        }
+
+        return Column(
+          children: scans.map((scan) {
+            final String type;
+            final IconData icon;
+            if (scan.provider.contains('SMS')) {
+              type = 'SMS';
+              icon = PhosphorIcons.chatCircleText();
+            } else if (scan.provider.contains('Email')) {
+              type = 'Email';
+              icon = PhosphorIcons.envelope();
+            } else if (scan.provider.contains('Password')) {
+              type = 'Password';
+              icon = PhosphorIcons.vault();
+            } else {
+              type = 'URL';
+              icon = PhosphorIcons.globe();
+            }
+
+            final isSafe = scan.result.toLowerCase() == 'safe' ||
+                           scan.result.toLowerCase() == 'clean';
+            final color = isSafe ? AppColors.brandGreen : Colors.orange;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: isDark ? const Color(0xFF333333) : Colors.grey.shade200),
+              ),
+              child: Row(
                 children: [
-                  Text(activity['risk']!, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
-                  Text(activity['time']!, style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey)),
+                  Icon(icon, color: color),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$type Scan',
+                          style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.dark),
+                        ),
+                        Text(
+                          scan.url,
+                          style: TextStyle(fontSize: 12, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(scan.result, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
+                      Text(
+                        _formatRelativeTime(scan.createdAt.toDate()),
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 }
