@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../models/activity_model.dart';
+import '../models/scan_model.dart';
 
 class AdminService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -34,6 +35,18 @@ class AdminService {
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => ActivityModel.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  /// Admin-level view of ALL users' scans from the url_scans collection.
+  Stream<List<ScanModel>> getAllScans() {
+    return _db
+        .collection('url_scans')
+        .orderBy('createdAt', descending: true)
+        .limit(200)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => ScanModel.fromMap(doc.data(), doc.id))
             .toList());
   }
 

@@ -676,25 +676,35 @@ class _PasswordScannerPanelState extends State<PasswordScannerPanel> {
   }
 
   String _estimateCrackTime(String password) {
-    if (password.isEmpty) return "Instant";
+    if (password.isEmpty) return 'Instant';
     int pool = 0;
     if (_hasLower) pool += 26;
     if (_hasUpper) pool += 26;
     if (_hasNumber) pool += 10;
     if (_hasSpecial) pool += 32;
-    if (pool == 0) return "Instant";
-    
+    if (pool == 0) return 'Instant';
+
     // Simple entropy calc: (pool ^ length) / guesses_per_sec
     double combinations = 1.0;
-    for (int i = 0; i < password.length; i++) { combinations *= pool; }
+    for (int i = 0; i < password.length; i++) {
+      combinations *= pool;
+      // Avoid overflow — cap at 1e30
+      if (combinations > 1e30) { combinations = 1e30; break; }
+    }
     double seconds = combinations / 10000000000.0; // 10B guesses/sec
-    
-    if (seconds < 1) return "Instant";
-    if (seconds < 60) return "${seconds.toInt()} seconds";
-    if (seconds < 3600) return "${(seconds / 60).toInt()} minutes";
-    if (seconds < 86400) return "${(seconds / 3600).toInt()} hours";
-    if (seconds < 31536000) return "${(seconds / 86400).toInt()} days";
-    return "${(seconds / 31536000).toInt()} years";
+
+    if (seconds < 1)           return 'Instant';
+    if (seconds < 60)          return '${seconds.toInt()} seconds';
+    if (seconds < 3600)        return '${(seconds / 60).toInt()} minutes';
+    if (seconds < 86400)       return '${(seconds / 3600).toInt()} hours';
+    if (seconds < 31536000)    return '${(seconds / 86400).toInt()} days';
+
+    final years = seconds / 31536000;
+    if (years < 1000)          return '${years.toInt()} years';
+    if (years < 1e6)           return '${(years / 1000).toStringAsFixed(1)}K years';
+    if (years < 1e9)           return '${(years / 1e6).toStringAsFixed(1)}M years';
+    if (years < 1e12)          return '${(years / 1e9).toStringAsFixed(1)}B years';
+    return '> 1 trillion years';
   }
 
   int get _score {
@@ -822,7 +832,15 @@ class _PasswordScannerPanelState extends State<PasswordScannerPanel> {
                 const SizedBox(width: 8),
                 Text('Est. Crack Time:', style: TextStyle(color: subtitleColor, fontSize: 13)),
                 const Spacer(),
-                Text(_crackTime, style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 13)),
+                Flexible(
+                  child: Text(
+                    _crackTime,
+                    style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 13),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
               ],
             ),
           ),

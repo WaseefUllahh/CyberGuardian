@@ -216,12 +216,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
           children: [
             PremiumCyberIcon(icon: icon, size: 26, color: green, hasBackground: true),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                color: selected ? Colors.white : textColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: TextStyle(
+                  color: selected ? Colors.white : textColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
           ],

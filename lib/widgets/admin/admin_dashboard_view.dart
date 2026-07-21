@@ -25,24 +25,27 @@ class AdminDashboardView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // Row 1: High Level Metrics
-          Row(
-            children: [
-              Expanded(child: StreamBuilder<int>(
-                stream: adminService.getTotalUsersCount(),
-                builder: (context, snapshot) {
-                  return _statCard(context, 'Total Users', snapshot.data?.toString() ?? '0', PhosphorIcons.users(), Colors.blue);
-                }
-              )),
-              const SizedBox(width: 16),
-              Expanded(child: StreamBuilder<int>(
-                stream: adminService.getOpenReportsCount(),
-                builder: (context, snapshot) {
-                  return _statCard(context, 'Open Reports', snapshot.data?.toString() ?? '0', PhosphorIcons.flagBanner(), Colors.orange);
-                }
-              )),
-              const SizedBox(width: 16),
-              Expanded(child: _statCard(context, 'System Health', '100%', PhosphorIcons.heartbeat(), green)),
-            ],
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: StreamBuilder<int>(
+                  stream: adminService.getTotalUsersCount(),
+                  builder: (context, snapshot) {
+                    return _statCard(context, 'Total Users', snapshot.data?.toString() ?? '0', PhosphorIcons.users(), Colors.blue);
+                  }
+                )),
+                const SizedBox(width: 16),
+                Expanded(child: StreamBuilder<int>(
+                  stream: adminService.getOpenReportsCount(),
+                  builder: (context, snapshot) {
+                    return _statCard(context, 'Open Reports', snapshot.data?.toString() ?? '0', PhosphorIcons.flagBanner(), Colors.orange);
+                  }
+                )),
+                const SizedBox(width: 16),
+                Expanded(child: _statCard(context, 'System Health', '100%', PhosphorIcons.heartbeat(), green)),
+              ],
+            ),
           ),
           const SizedBox(height: 32),
           Row(
@@ -54,29 +57,32 @@ class AdminDashboardView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // Row 2: Aggregated Metrics
-          Row(
-            children: [
-              Expanded(child: StreamBuilder<int>(
-                stream: adminService.getTotalSystemScans(),
-                builder: (context, snapshot) {
-                  return _statCard(context, 'Total Scans', snapshot.data?.toString() ?? '0', PhosphorIcons.scan(), Colors.indigo);
-                }
-              )),
-              const SizedBox(width: 16),
-              Expanded(child: StreamBuilder<int>(
-                stream: adminService.getTotalSafeScans(),
-                builder: (context, snapshot) {
-                  return _statCard(context, 'Safe Scans', snapshot.data?.toString() ?? '0', PhosphorIcons.shieldCheck(), Colors.green);
-                }
-              )),
-              const SizedBox(width: 16),
-              Expanded(child: StreamBuilder<int>(
-                stream: adminService.getTotalUnsafeScans(),
-                builder: (context, snapshot) {
-                  return _statCard(context, 'Unsafe Scans', snapshot.data?.toString() ?? '0', PhosphorIcons.shieldWarning(), Colors.red);
-                }
-              )),
-            ],
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: StreamBuilder<int>(
+                  stream: adminService.getTotalSystemScans(),
+                  builder: (context, snapshot) {
+                    return _statCard(context, 'Total Scans', snapshot.data?.toString() ?? '0', PhosphorIcons.scan(), Colors.indigo);
+                  }
+                )),
+                const SizedBox(width: 16),
+                Expanded(child: StreamBuilder<int>(
+                  stream: adminService.getTotalSafeScans(),
+                  builder: (context, snapshot) {
+                    return _statCard(context, 'Safe Scans', snapshot.data?.toString() ?? '0', PhosphorIcons.shieldCheck(), Colors.green);
+                  }
+                )),
+                const SizedBox(width: 16),
+                Expanded(child: StreamBuilder<int>(
+                  stream: adminService.getTotalUnsafeScans(),
+                  builder: (context, snapshot) {
+                    return _statCard(context, 'Unsafe Scans', snapshot.data?.toString() ?? '0', PhosphorIcons.shieldWarning(), Colors.red);
+                  }
+                )),
+              ],
+            ),
           ),
           const SizedBox(height: 32),
           // Info Card
@@ -128,7 +134,11 @@ class AdminDashboardView extends StatelessWidget {
             child: Icon(icon, color: color, size: 28),
           ),
           const SizedBox(height: 16),
-          Text(value, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(value, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: isDark ? Colors.white : dark)),
+          ),
           const SizedBox(height: 4),
           Text(title, style: TextStyle(color: isDark ? const Color(0xFFAAAAAA) : grey, fontSize: 14, fontWeight: FontWeight.w600)),
         ],
