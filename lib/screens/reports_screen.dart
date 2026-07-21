@@ -35,7 +35,13 @@ class _ReportsScreenState extends State<ReportsScreen>
 
   Future<void> _openSubmitReport() async {
     final result = await Navigator.pushNamed(context, '/submit-report');
-    if (result != null && result == true) {
+    if (result != null && result is Map<String, dynamic>) {
+      final category = result['title']?.toString() ?? 'General Threat';
+      final source = (result['categories'] as List<dynamic>?)?.join(', ') ?? 'Unknown';
+      final details = result['description']?.toString() ?? '';
+      
+      await ReportService().submitReport(category, source, details);
+
       _tabController.animateTo(2);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

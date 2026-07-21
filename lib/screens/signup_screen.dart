@@ -4,6 +4,7 @@ import '../utils/app_colors.dart';
 import '../utils/auth_utils.dart';
 import '../services/auth_service.dart';
 import '../widgets/auth_widgets.dart';
+import '../widgets/password_strength_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -19,6 +20,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
   bool _obscurePass = true, _obscureConfirm = true, _loading = false;
+  String _passwordText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _password.addListener(() {
+      setState(() => _passwordText = _password.text);
+    });
+  }
 
   @override
   void dispose() {
@@ -111,7 +121,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   label: '',
                   hint: 'Full Name',
                   controller: _name,
-                  validator: (v) => requiredValidator(v, 'name'),
+                  validator: (v) {
+                    final req = requiredValidator(v, 'name');
+                    if (req != null) return req;
+                    if (!RegExp(r'[a-zA-Z]').hasMatch(v!)) {
+                      return 'Name must contain at least one letter';
+                    }
+                    return null;
+                  },
                   prefixIcon: PhosphorIcons.user(),
                 ),
                 const SizedBox(height: 16),
@@ -133,8 +150,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   obscure: _obscurePass,
                   prefixIcon: PhosphorIcons.lock(),
                   suffixIcon: passwordToggle(_obscurePass, () => setState(() => _obscurePass = !_obscurePass)),
-                  validator: passwordValidator,
+                  validator: (v) {
+                    if (requiredValidator(v, 'password') != null) return requiredValidator(v, 'password');
+                    if (v!.length < 8) return 'Password must be at least 8 characters';
+                    if (!v.contains(RegExp(r'[A-Z]'))) return 'Add at least one uppercase letter (A–Z)';
+                    if (!v.contains(RegExp(r'[0-9]'))) return 'Add at least one number (0–9)';
+                    if (!v.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-=+\[\]\\;~/`]'))) {
+                      return r'Add at least one special character (!@#$%…)';
+                    }
+                    return null;
+                  },
                 ),
+
+                // Real-time password strength indicator
+                PasswordStrengthIndicator(password: _passwordText),
+
                 const SizedBox(height: 16),
 
                 AuthField(

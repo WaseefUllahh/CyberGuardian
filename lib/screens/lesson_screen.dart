@@ -224,7 +224,7 @@ class _LessonScreenState extends State<LessonScreen> {
             child: Image.network(
               section.content,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorBuilder: (_, _, _) => Container(
                 height: 160,
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFEEEEEE),

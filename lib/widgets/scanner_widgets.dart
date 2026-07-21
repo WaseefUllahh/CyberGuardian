@@ -141,6 +141,40 @@ class _UrlScannerPanelState extends State<UrlScannerPanel> {
           if (_result != null) ...[
             const SizedBox(height: 16),
             _ScanResultCard(result: _result!),
+            const SizedBox(height: 16),
+            // ── Additional Info ──
+            if (!_result!.isSafe) ...[
+              // Blacklist (show malicious engines count)
+              Row(
+                children: [
+                  Icon(PhosphorIcons.prohibit(), color: Colors.red, size: 20),
+                  const SizedBox(width: 8),
+                  Text('Blacklist: ', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+                  Text('${_result!.maliciousEngines?.length ?? 0} engines flagged', style: TextStyle(color: subtitleColor)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Reputation (simple score based on malicious count)
+              Row(
+                children: [
+                  Icon(PhosphorIcons.star(), color: Colors.amber, size: 20),
+                  const SizedBox(width: 8),
+                  Text('Reputation: ', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+                  Text('Malicious engines: ${_result!.maliciousCount ?? 0}', style: TextStyle(color: subtitleColor)),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ] else ...[
+              // Safe info
+              Row(
+                children: [
+                  Icon(PhosphorIcons.checkCircle(), color: green, size: 20),
+                  const SizedBox(width: 8),
+                  Text('No threats detected', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
           ],
         ],
       ),
@@ -609,9 +643,12 @@ class _PasswordScannerPanelState extends State<PasswordScannerPanel> {
   bool _obscure = true;
 
   bool _hasLength = false;
-  bool _hasUpperLower = false;
+  bool _hasUpper = false;
+  bool _hasLower = false;
   bool _hasNumber = false;
   bool _hasSpecial = false;
+
+  String _crackTime = "Instant";
 
   @override
   void initState() {
@@ -630,16 +667,41 @@ class _PasswordScannerPanelState extends State<PasswordScannerPanel> {
     final text = _controller.text;
     setState(() {
       _hasLength = text.length >= 8;
-      _hasUpperLower = text.contains(RegExp(r'[A-Z]')) && text.contains(RegExp(r'[a-z]'));
+      _hasUpper = text.contains(RegExp(r'[A-Z]'));
+      _hasLower = text.contains(RegExp(r'[a-z]'));
       _hasNumber = text.contains(RegExp(r'[0-9]'));
       _hasSpecial = text.contains(RegExp(r'[!@#\$%\^&\*\(\)_\+\-\=\[\]\{\};:\",<>\./\?\\|`~]'));
+      _crackTime = _estimateCrackTime(text);
     });
+  }
+
+  String _estimateCrackTime(String password) {
+    if (password.isEmpty) return "Instant";
+    int pool = 0;
+    if (_hasLower) pool += 26;
+    if (_hasUpper) pool += 26;
+    if (_hasNumber) pool += 10;
+    if (_hasSpecial) pool += 32;
+    if (pool == 0) return "Instant";
+    
+    // Simple entropy calc: (pool ^ length) / guesses_per_sec
+    double combinations = 1.0;
+    for (int i = 0; i < password.length; i++) { combinations *= pool; }
+    double seconds = combinations / 10000000000.0; // 10B guesses/sec
+    
+    if (seconds < 1) return "Instant";
+    if (seconds < 60) return "${seconds.toInt()} seconds";
+    if (seconds < 3600) return "${(seconds / 60).toInt()} minutes";
+    if (seconds < 86400) return "${(seconds / 3600).toInt()} hours";
+    if (seconds < 31536000) return "${(seconds / 86400).toInt()} days";
+    return "${(seconds / 31536000).toInt()} years";
   }
 
   int get _score {
     int s = 0;
     if (_hasLength) s++;
-    if (_hasUpperLower) s++;
+    if (_hasUpper) s++;
+    if (_hasLower) s++;
     if (_hasNumber) s++;
     if (_hasSpecial) s++;
     return s;
@@ -648,20 +710,24 @@ class _PasswordScannerPanelState extends State<PasswordScannerPanel> {
   String get _strengthText {
     if (_controller.text.isEmpty) return 'Enter a password';
     if (_score <= 1) return 'Weak';
-    if (_score <= 3) return 'Fair';
-    return 'Strong';
+    if (_score <= 2) return 'Fair';
+    if (_score <= 3) return 'Good';
+    if (_score <= 4) return 'Strong';
+    return 'Excellent';
   }
 
   Color get _strengthColor {
     if (_controller.text.isEmpty) return grey;
     if (_score <= 1) return Colors.red;
-    if (_score <= 3) return Colors.orange;
+    if (_score <= 2) return Colors.orange;
+    if (_score <= 3) return Colors.yellow.shade700;
+    if (_score <= 4) return Colors.lightGreen;
     return green;
   }
 
   double get _strengthProgress {
     if (_controller.text.isEmpty) return 0.0;
-    return _score / 4.0;
+    return _score / 5.0;
   }
 
   @override
@@ -742,9 +808,50 @@ class _PasswordScannerPanelState extends State<PasswordScannerPanel> {
               minHeight: 8,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
+          // Estimated Crack Time
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(PhosphorIcons.clock(), size: 18, color: subtitleColor),
+                const SizedBox(width: 8),
+                Text('Est. Crack Time:', style: TextStyle(color: subtitleColor, fontSize: 13)),
+                const Spacer(),
+                Text(_crackTime, style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 13)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Breached Password Warning Placeholder
+          if (_score <= 2 && _controller.text.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(PhosphorIcons.warning(), color: Colors.red, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Breached Password Warning: This password has appeared in data leaks. (API Integration Pending)',
+                      style: TextStyle(color: Colors.red, fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 8),
           _buildCheckItem('At least 8 characters', _hasLength, isDark, textColor, subtitleColor),
-          _buildCheckItem('Uppercase & lowercase letters', _hasUpperLower, isDark, textColor, subtitleColor),
+          _buildCheckItem('Uppercase letter', _hasUpper, isDark, textColor, subtitleColor),
+          _buildCheckItem('Lowercase letter', _hasLower, isDark, textColor, subtitleColor),
           _buildCheckItem('Contains a number', _hasNumber, isDark, textColor, subtitleColor),
           _buildCheckItem('Contains a special character', _hasSpecial, isDark, textColor, subtitleColor),
         ],

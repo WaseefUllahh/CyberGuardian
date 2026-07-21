@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CSC365 HCI Semester Project Evaluation</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 40px auto;
+            max-width: 900px;
+            color: #000;
+        }
+        h1, h2, h3, h4 {
+            text-align: center;
+            margin: 5px 0;
+        }
+        h1 { font-size: 22px; }
+        h2 { font-size: 18px; font-weight: normal; }
+        h3 { font-size: 16px; color: #1e3a8a; margin-top: 15px; margin-bottom: 20px;}
+        .instructions {
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+        th {
+            background-color: #1e3a8a;
+            color: white;
+            text-align: left;
+            font-weight: bold;
+        }
+        .header-table td {
+            padding: 10px;
+        }
+        .header-table td:first-child {
+            width: 30%;
+            font-weight: bold;
+            background-color: #f3f4f6;
+        }
+        .col-num { width: 3%; text-align: center; }
+        .col-crit { width: 30%; }
+        .col-impl { width: 12%; }
+        .col-ref { width: 35%; }
+        .col-eval { width: 20%; }
+        .checkbox {
+            font-family: 'Segoe UI Symbol', sans-serif;
+            font-size: 14px;
+        }
+        .part-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e3a8a;
+            border-bottom: 2px solid #1e3a8a;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+        .eval-box {
+            font-style: italic;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>COMSATS University Islamabad, Abbottabad Campus</h1>
+    <h2>Department of Computer Science</h2>
+    <h2><strong>CSC365 — HCI and Computer Graphics</strong></h2>
+    <h3>Semester Project — Student Self-Evaluation Form</h3>
+
+    <div class="instructions">
+        Instructions: Complete this form BEFORE coming for evaluation and bring a printed copy. For every criterion, tick the box that best reflects your project and write the exact location in the project (screen name, module, file, or feature) where it can be demonstrated. The evaluator will verify each claim live during the presentation and complete the right-hand column. Leave a criterion blank only if it genuinely does not apply to your project.
+    </div>
+
+    <table class="header-table">
+        <tr><td>Student Name</td><td>[Your Name Here]</td></tr>
+        <tr><td>Registration No.</td><td>[Your Reg No Here]</td></tr>
+        <tr><td>Section / Semester</td><td>[Your Section] / [Semester]</td></tr>
+        <tr><td>Project Title</td><td>CyberGuardian - Interactive Cybersecurity Platform</td></tr>
+        <tr><td>Group Members (if any)</td><td>[Names of group members]</td></tr>
+        <tr><td>Date of Evaluation / Panel</td><td>[Date] / [Panel]</td></tr>
+    </table>
+
+    <div class="part-title">Part A: Interaction Design Principles (Unit 1)</div>
+    <table>
+        <tr>
+            <th class="col-num">#</th><th class="col-crit">Criterion</th><th class="col-impl">Implemented?</th><th class="col-ref">Exact reference in project<br>(screen / module / file / feature)</th><th class="col-eval">For evaluator use</th>
+        </tr>
+        <tr>
+            <td class="col-num">1</td>
+            <td class="col-crit"><strong>Good design principles applied</strong><br>e.g., visibility, feedback, constraints, consistency, affordance, mapping</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Feedback:</strong> SnackBar popups on lesson complete (lesson_screen.dart).<br><strong>Constraints:</strong> Disabled buttons during loading (login_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">2</td>
+            <td class="col-crit"><strong>Universal Design principles considered</strong><br>e.g., equitable use, flexibility, perceptible information, tolerance for error</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Flexibility:</strong> App supports both Dark Mode and Light Mode seamlessly via ThemeData (lib/utils/app_theme.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">3</td>
+            <td class="col-crit"><strong>PACT Analysis conducted</strong><br>People, Activities, Context, Technology</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Context & Tech:</strong> Mobile-first learning environment for students (learning_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">4</td>
+            <td class="col-crit"><strong>Usability goals addressed</strong><br>effectiveness, efficiency, safety, learnability, memorability</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Safety & Learnability:</strong> Form validation prevents bad inputs; clear, stepped navigation (course_detail_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">5</td>
+            <td class="col-crit"><strong>UX goals addressed</strong><br>satisfaction, enjoyment, aesthetics, motivation</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Motivation:</strong> Gamification using XP rewards, Progress Bars, and Certificates (quiz_screen.dart, certificate_service.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">6</td>
+            <td class="col-crit"><strong>Conceptual model / interface metaphor defined for the system</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Metaphor:</strong> A "Guardian/Shield". Shown via the "Protected" badge and primary shield icons (dashboard_drawer.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+    </table>
+
+    <!-- Part B -->
+    <div style="page-break-before: always;"></div>
+    <div class="part-title">Part B: Data Gathering (Unit 2)</div>
+    <table>
+        <tr>
+            <th class="col-num">#</th><th class="col-crit">Criterion</th><th class="col-impl">Implemented?</th><th class="col-ref">Exact reference in project<br>(screen / module / file / feature)</th><th class="col-eval">For evaluator use</th>
+        </tr>
+        <tr>
+            <td class="col-num">1</td>
+            <td class="col-crit"><strong>Data-gathering technique(s) used</strong><br>specify: survey / interview / observation / focus group / diary study</td>
+            <td class="col-impl"><span class="checkbox">☐</span> Yes<br><span class="checkbox">☑</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">[Specify your research: e.g., "Surveyed peers about phishing awareness to structure the learning content."]</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">2</td>
+            <td class="col-crit"><strong>Quantitative and/or qualitative data collected and analyzed</strong></td>
+            <td class="col-impl"><span class="checkbox">☐</span> Yes<br><span class="checkbox">☑</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">[Specify data: e.g., "Analyzed 20 survey responses to determine top cyber threats to cover."]</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+    </table>
+
+    <div class="part-title">Part C: Human-Centered Design Process (Unit 3)</div>
+    <table>
+        <tr>
+            <th class="col-num">#</th><th class="col-crit">Criterion</th><th class="col-impl">Implemented?</th><th class="col-ref">Exact reference in project<br>(screen / module / file / feature)</th><th class="col-eval">For evaluator use</th>
+        </tr>
+        <tr>
+            <td class="col-num">1</td>
+            <td class="col-crit"><strong>User personas developed</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Target user: Student/Beginner needing accessible cyber awareness (Refer to Project Report Persona section).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">2</td>
+            <td class="col-crit"><strong>Scenarios / user stories written</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Use Case: "User wants to verify a suspicious link" -> Implemented in URL Scanner (scanner_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">3</td>
+            <td class="col-crit"><strong>Task analysis performed</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Task Flow: Select Course -> View Lesson -> Take Quiz -> Earn Certificate (course_detail_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">4</td>
+            <td class="col-crit"><strong>Prototypes created before development</strong><br>low-fidelity and/or high-fidelity</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">UI Wireframes mapped to final implementation.</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">5</td>
+            <td class="col-crit"><strong>Elements of visual design applied</strong><br>alignment, contrast, hierarchy, balance, typography, colour</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Color & Contrast:</strong> Strategic use of AppColors.brandGreen for primary actions; clear hierarchy (utils/app_colors.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">6</td>
+            <td class="col-crit"><strong>Established UI design standards / guidelines followed</strong><br>e.g., Material Design, Apple HIG</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Implemented Google <strong>Material Design 3</strong> guidelines via Flutter's ThemeData(useMaterial3: true) (main.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">7</td>
+            <td class="col-crit"><strong>Recognized design patterns used</strong><br>e.g., navigation, form, card patterns</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Navigation Drawer</strong> (dashboard_drawer.dart), <strong>Card Pattern</strong> for displaying courses (learning_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">8</td>
+            <td class="col-crit"><strong>Data visualization elements included</strong><br>charts, graphs, dashboards</td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Course Progress Bars displaying completion percentages visually (course_detail_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+    </table>
+
+    <!-- Part D -->
+    <div style="page-break-before: always;"></div>
+    <div class="part-title">Part D: Heuristic / Usability Evaluation (Unit 4)</div>
+    <div class="instructions">Apply Nielsen's 10 usability heuristics to your OWN project...</div>
+    <table>
+        <tr>
+            <th class="col-num">#</th><th class="col-crit">Criterion</th><th class="col-impl">Implemented?</th><th class="col-ref">Exact reference in project<br>(screen / module / file / feature)</th><th class="col-eval">For evaluator use</th>
+        </tr>
+        <tr>
+            <td class="col-num">1</td>
+            <td class="col-crit"><strong>1. Visibility of system status</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">CircularProgressIndicator used during async tasks like scanning URLs or processing logins (scanner_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">2</td>
+            <td class="col-crit"><strong>2. Match between system and the real world</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Uses familiar real-world terms like "Syllabus", "Quizzes", and "Certificate" (course_detail_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">3</td>
+            <td class="col-crit"><strong>3. User control and freedom</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Easy "Back" navigation via AppBar icons; immediate Logout capability available in the Drawer (dashboard_drawer.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">4</td>
+            <td class="col-crit"><strong>4. Consistency and standards</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Consistent use of Phosphor Icons and standardized color palettes across all screens (utils/app_colors.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">5</td>
+            <td class="col-crit"><strong>5. Error prevention</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Authentication forms strictly prevent submission of empty or invalid email formats (login_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">6</td>
+            <td class="col-crit"><strong>6. Recognition rather than recall</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">App saves and displays "Recent Scans" history so users don't have to memorize past malicious URLs (scanner_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">7</td>
+            <td class="col-crit"><strong>7. Flexibility and efficiency of use</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Quick access to main features via the side Dashboard Drawer and visual home screen cards (dashboard_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">8</td>
+            <td class="col-crit"><strong>8. Aesthetic and minimalist design</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Clean UI with ample whitespace; removed harsh square backgrounds from logos using ClipRRect (splash_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">9</td>
+            <td class="col-crit"><strong>9. Help users recognize, diagnose, and recover from errors</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Clear red SnackBar messages on errors (e.g., "Invalid credentials" or "Phishing detected") (auth_service.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">10</td>
+            <td class="col-crit"><strong>10. Help and documentation</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">The entire internal "Learning Module" acts as embedded interactive documentation for cyber threats (learning_content.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+    </table>
+
+    <div class="part-title">Part E: Cognitive, Social & Emotional Aspects (Unit 5)</div>
+    <table>
+        <tr>
+            <th class="col-num">#</th><th class="col-crit">Criterion</th><th class="col-impl">Implemented?</th><th class="col-ref">Exact reference in project<br>(screen / module / file / feature)</th><th class="col-eval">For evaluator use</th>
+        </tr>
+        <tr>
+            <td class="col-num">1</td>
+            <td class="col-crit"><strong>Cognitive load (memory / attention) considered in the design</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Learning content is chunked into very short 4-8 minute bites instead of overwhelming walls of text (learning_content.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">2</td>
+            <td class="col-crit"><strong>Emotional design / affective elements incorporated</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Aesthetic rounded corners and a visual "Protected" badge on the profile evoke a feeling of security (dashboard_drawer.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">3</td>
+            <td class="col-crit"><strong>Persuasive technology / behaviour-change elements used</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref"><strong>Gamification:</strong> Users earn XP and unlock quizzes/certificates, motivating them to learn security (learning_progress.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">4</td>
+            <td class="col-crit"><strong>Anthropomorphism used</strong><br>e.g., chatbot or assistant persona</td>
+            <td class="col-impl"><span class="checkbox">☐</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☑</span> No</td>
+            <td class="col-ref">N/A</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+    </table>
+
+    <div class="part-title">Part F: Interaction Technologies (Unit 6)</div>
+    <table>
+        <tr>
+            <th class="col-num">#</th><th class="col-crit">Criterion</th><th class="col-impl">Implemented?</th><th class="col-ref">Exact reference in project<br>(screen / module / file / feature)</th><th class="col-eval">For evaluator use</th>
+        </tr>
+        <tr>
+            <td class="col-num">1</td>
+            <td class="col-crit"><strong>Touch / multi-touch interaction</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Standard mobile touch interactions (Tap, Scroll) via SingleChildScrollView and ListTile (course_detail_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">2</td>
+            <td class="col-crit"><strong>Speech recognition / natural language processing</strong></td>
+            <td class="col-impl"><span class="checkbox">☐</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☑</span> No</td>
+            <td class="col-ref">N/A</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">3</td>
+            <td class="col-crit"><strong>Augmented Reality / Virtual Reality</strong></td>
+            <td class="col-impl"><span class="checkbox">☐</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☑</span> No</td>
+            <td class="col-ref">N/A</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+        <tr>
+            <td class="col-num">4</td>
+            <td class="col-crit"><strong>Other emerging interaction technology</strong></td>
+            <td class="col-impl"><span class="checkbox">☑</span> Yes<br><span class="checkbox">☐</span> Partial<br><span class="checkbox">☐</span> No</td>
+            <td class="col-ref">Interactive YouTube IFrame embeds for rich media learning (lesson_screen.dart).</td>
+            <td class="col-eval"><span class="checkbox">☐</span> Verified<br><span class="checkbox">☐</span> Not shown<br><div class="eval-box">Remarks:</div></td>
+        </tr>
+    </table>
+
+    <div style="page-break-before: always;"></div>
+    <div class="part-title">Part G: Self-Reflection</div>
+    
+    <p><strong>1. What was the biggest usability challenge in this project, and how did you address it?</strong></p>
+    <p style="font-style: italic; color: #333; margin-bottom: 30px;">
+        The biggest usability challenge was handling asynchronous state changes (like User Authentication, Quiz Scores, and Course Progress) across different screens without causing the user to face stale data. <br><br>
+        I addressed this by implementing reactive Streams (using StreamBuilder in Flutter) across the critical components, such as the Dashboard Drawer and the Course Detail Screen. This ensures the UI automatically and instantly updates to reflect new progress (like unlocking the next lesson) without forcing the user to manually refresh the page or restart the app.
+    </p>
+
+    <p><strong>2. If you had two more weeks, what would you improve first, and why?</strong></p>
+    <p style="font-style: italic; color: #333; margin-bottom: 50px;">
+        If I had two more weeks, I would improve the URL Scanner module by adding a visual analytics dashboard (using a charting library like fl_chart). This would provide a graphical overview of the user's scan history (e.g., showing a pie chart of safe vs. malicious links over time). This would better satisfy the 'Data visualization' heuristic and give users a clearer, more immediate understanding of their threat exposure over time.
+    </p>
+
+    <div class="part-title">Part H: Declaration</div>
+    <p>I hereby declare that the self-assessment above is accurate to the best of my knowledge and that every feature referenced can be demonstrated live during evaluation.</p>
+    
+    <div style="margin-top: 50px;">
+        Student Signature: _________________________________________ 
+    </div>
+
+</body>
+</html>

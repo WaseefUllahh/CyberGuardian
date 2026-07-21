@@ -35,11 +35,11 @@ class AuthService {
              'role': 'admin',
              'lastLogin': Timestamp.now(),
            }, SetOptions(merge: true));
-        } else {
-           await _db.collection('users').doc(credential.user!.uid).update({
+         } else {
+           await _db.collection('users').doc(credential.user!.uid).set({
              'lastLogin': Timestamp.now(),
-           });
-        }
+           }, SetOptions(merge: true));
+         }
         await _activityService.logActivity('Login');
       }
       
@@ -101,7 +101,13 @@ class AuthService {
 
   // Logout
   Future<void> logout() async {
-    await _activityService.logActivity('Logout');
+    try {
+      // Log before sign-out while auth is still valid.
+      // Wrapped so a Firestore error never blocks the actual sign-out.
+      await _activityService.logActivity('Logout');
+    } catch (e) {
+      debugPrint('Logout activity log failed (non-fatal): $e');
+    }
     await _auth.signOut();
   }
 
@@ -145,9 +151,11 @@ class AuthService {
     debugPrint('Firebase Auth Error: ${e.code} - ${e.message}');
     switch (e.code) {
       case 'user-not-found':
-        return 'No user found for that email.';
+        return 'No account found for that email.';
       case 'wrong-password':
-        return 'Wrong password provided.';
+        return 'Incorrect password. Please try again.';
+      case 'invalid-credential':
+        return 'Invalid email or password. Please check and try again.';
       case 'invalid-email':
         return 'The email address is badly formatted.';
       case 'user-disabled':
@@ -158,6 +166,10 @@ class AuthService {
         return 'Email/password accounts are not enabled.';
       case 'weak-password':
         return 'The password provided is too weak.';
+      case 'too-many-requests':
+        return 'Too many failed attempts. Please wait and try again.';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection.';
       default:
         return e.message ?? 'An error occurred. Please try again. (${e.code})';
     }

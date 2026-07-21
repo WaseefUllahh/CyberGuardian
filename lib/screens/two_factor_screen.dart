@@ -7,8 +7,10 @@ class TwoFactorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Two-Factor Authentication',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -35,7 +37,8 @@ class TwoFactorScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                  borderRadius: BorderRadius.circular(14)),
               child: Row(
                 children: [
                   Icon(PhosphorIcons.envelope(), color: AppColors.brandGreen, size: 28),
@@ -51,7 +54,7 @@ class TwoFactorScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Switch(value: false, onChanged: (v) {}, activeColor: AppColors.brandGreen),
+                  Switch(value: false, onChanged: (v) {}, activeThumbColor: AppColors.brandGreen),
                 ],
               ),
             ),

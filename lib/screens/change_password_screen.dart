@@ -58,15 +58,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
-  Widget _passwordField(String label, TextEditingController ctrl, bool show, VoidCallback toggle) {
+  Widget _passwordField(BuildContext context, String label, TextEditingController ctrl, bool show, VoidCallback toggle) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.grey)),
+        Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.dark)),
         const SizedBox(height: 8),
         TextField(
           controller: ctrl,
           obscureText: !show,
+          style: TextStyle(color: AppColors.dark),
+          cursorColor: AppColors.brandGreen,
           decoration: InputDecoration(
             prefixIcon: Icon(PhosphorIcons.lockKey(), color: AppColors.brandGreen),
             suffixIcon: IconButton(
@@ -74,7 +78,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               onPressed: toggle,
             ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.transparent)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: AppColors.brandGreen, width: 1.5)),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
@@ -87,7 +97,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Change Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.brandGreen,
@@ -102,9 +112,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 12),
-                  _passwordField('Current Password', _currentCtrl, _showCurrent, () => setState(() => _showCurrent = !_showCurrent)),
-                  _passwordField('New Password', _newCtrl, _showNew, () => setState(() => _showNew = !_showNew)),
-                  _passwordField('Confirm New Password', _confirmCtrl, _showConfirm, () => setState(() => _showConfirm = !_showConfirm)),
+                  _passwordField(context, 'Current Password', _currentCtrl, _showCurrent, () => setState(() => _showCurrent = !_showCurrent)),
+                  _passwordField(context, 'New Password', _newCtrl, _showNew, () => setState(() => _showNew = !_showNew)),
+                  _passwordField(context, 'Confirm New Password', _confirmCtrl, _showConfirm, () => setState(() => _showConfirm = !_showConfirm)),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,

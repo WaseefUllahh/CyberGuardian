@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
+import '../services/auth_service.dart';
 
 /// Singleton that caches the currently signed-in [UserModel] and
 /// keeps it in sync with Firestore. Used by the drawer and other
@@ -35,6 +36,6 @@ class UserStore {
 
   Future<void> logout() async {
     _currentUser = null;
-    await FirebaseAuth.instance.signOut();
+    await AuthService().logout();
   }
 }

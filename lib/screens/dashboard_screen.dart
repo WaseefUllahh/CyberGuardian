@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../utils/app_colors.dart';
@@ -7,6 +8,9 @@ import '../models/user_model.dart';
 import '../models/report_model.dart';
 import '../widgets/dashboard_widgets.dart';
 import '../widgets/dashboard_drawer.dart';
+import '../services/profile_service.dart';
+import 'scan_history_screen.dart';
+import 'news_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -49,6 +53,12 @@ class DashboardScreen extends StatelessWidget {
                       progress: (user?.securityScore ?? 100) / 100.0,
                       onTap: () => Navigator.pushNamed(context, '/scanner'),
                     ),
+                    const SizedBox(height: 20),
+
+                    // ── Total Scans Stats ──
+                    _buildSectionTitle('Your Statistics', '', textTheme, isLink: false),
+                    const SizedBox(height: 14),
+                    _buildUserStats(context, user),
                     const SizedBox(height: 28),
 
                     // ── Quick Actions ──
@@ -57,33 +67,20 @@ class DashboardScreen extends StatelessWidget {
                     _buildQuickActions(context),
                     const SizedBox(height: 28),
 
-                    // ── Urgent Threat ──
-                    _buildSectionTitle('Recent Reports', 'View all', textTheme, onTap: () => Navigator.pushNamed(context, '/reports')),
-                    const SizedBox(height: 14),
-                    
-                    StreamBuilder<List<ReportModel>>(
-                      stream: reportService.getUserReports(),
-                      builder: (context, reportSnapshot) {
-                        if (reportSnapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                        
-                        final reports = reportSnapshot.data ?? [];
-                        if (reports.isEmpty) {
-                          return Text('No recent reports.', style: TextStyle(color: AppColors.grey));
-                        }
-                        
-                        final latestReport = reports.first;
-                        return StatusListRow(
-                          icon: PhosphorIcons.warning(),
-                          statusColor: latestReport.status == 'Pending' ? AppColors.statusWarningRed : AppColors.brandGreen,
-                          title: latestReport.category,
-                          subtitle: latestReport.details,
-                          statusText: latestReport.status,
-                          onTap: () => Navigator.pushNamed(context, '/reports'),
+                    // ── Recent Activity Timeline ──
+                    _buildSectionTitle(
+                      'Recent Activity', 
+                      'View History', 
+                      textTheme, 
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ScanHistoryScreen()),
                         );
-                      }
+                      },
                     ),
+                    const SizedBox(height: 14),
+                    _buildRecentActivity(context, isDark),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -116,10 +113,7 @@ class DashboardScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Good Morning,',
-                  style: TextStyle(fontSize: 14, color: subtitleColor)),
-              const SizedBox(height: 2),
-              Text('$name 👋',
+              Text(name,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor)),
               const SizedBox(height: 2),
               Text('Stay safe online today',
@@ -131,7 +125,12 @@ class DashboardScreen extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(PhosphorIcons.bellRinging(), color: iconColor, size: 26),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NewsScreen()),
+                );
+              },
             ),
             Positioned(
               right: 10,
@@ -148,11 +147,44 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 4),
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: AppColors.brandGreen,
-          child: Text(initials,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+        GestureDetector(
+          onTap: () async {
+            if (user == null) return;
+            final picker = ImagePicker();
+            final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+            if (pickedFile != null) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Uploading photo...')));
+              final url = await ProfileService().uploadAvatar(user.uid, pickedFile);
+              if (!context.mounted) return;
+              if (url != null) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload successful!')));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload failed. Please try again.')));
+              }
+            }
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.brandGreen,
+              shape: BoxShape.circle,
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: (user?.photoUrl != null && user!.photoUrl!.isNotEmpty)
+                ? Image.network(
+                    user.photoUrl!,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)));
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(child: Text(initials, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)));
+                    },
+                  )
+                : Center(child: Text(initials, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14))),
+          ),
         ),
       ],
     );
@@ -227,6 +259,110 @@ class DashboardScreen extends StatelessWidget {
           onTap: () => Navigator.pushNamed(context, '/scanner', arguments: 'Password'),
         ),
       ],
+    );
+  }
+
+  // ─── User Stats ─────────────────────────────────────────────────────────────
+  Widget _buildUserStats(BuildContext context, UserModel? user) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final reportService = ReportService();
+    
+    return Row(
+      children: [
+        Expanded(
+          child: _statBox(cardColor, isDark, PhosphorIcons.scan(), 'Total Scans', (user?.totalScans ?? 0).toString()),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: StreamBuilder<List<ReportModel>>(
+            stream: reportService.getUserReports(),
+            builder: (context, snapshot) {
+              final reportCount = snapshot.data?.length ?? 0;
+              return _statBox(cardColor, isDark, PhosphorIcons.flag(), 'Reports', reportCount.toString());
+            }
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _statBox(Color bgColor, bool isDark, IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.brandGreen.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppColors.brandGreen, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.dark)),
+              Text(label, style: TextStyle(fontSize: 12, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Recent Activity ────────────────────────────────────────────────────────
+  Widget _buildRecentActivity(BuildContext context, bool isDark) {
+    // Mock recent activity for now. To be wired with Firebase.
+    final List<Map<String, String>> activities = [
+      {'title': 'URL Scanned', 'desc': 'example.com', 'time': '2 hrs ago', 'icon': 'url', 'risk': 'Safe'},
+      {'title': 'Password Checked', 'desc': 'P@ssw0rd', 'time': 'Yesterday', 'icon': 'pass', 'risk': 'Weak'},
+    ];
+
+    return Column(
+      children: activities.map((activity) {
+        final icon = activity['icon'] == 'url' ? PhosphorIcons.globe() : PhosphorIcons.vault();
+        final color = activity['risk'] == 'Safe' ? AppColors.brandGreen : Colors.orange;
+        
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: isDark ? const Color(0xFF333333) : Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: color),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(activity['title']!, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.dark)),
+                    Text(activity['desc']!, style: TextStyle(fontSize: 12, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey)),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(activity['risk']!, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
+                  Text(activity['time']!, style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFFAAAAAA) : AppColors.grey)),
+                ],
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

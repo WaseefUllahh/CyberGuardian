@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
 import '../models/user_model.dart';
 import '../utils/app_colors.dart';
+import '../services/profile_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -19,17 +21,17 @@ class ProfileScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Confirm Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
               _logout(context);
             },
             child: const Text('Logout', style: TextStyle(color: Colors.red)),
@@ -88,15 +90,57 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         // Avatar
-                        CircleAvatar(
-                          radius: 46,
-                          backgroundColor: Colors.white.withValues(alpha: 0.2),
-                          backgroundImage: (user?.photoUrl != null && user!.photoUrl!.isNotEmpty)
-                              ? NetworkImage(user.photoUrl!)
-                              : null,
-                          child: (user?.photoUrl == null || user!.photoUrl!.isEmpty)
-                              ? Icon(PhosphorIcons.identificationBadge(), size: 52, color: Colors.white)
-                              : null,
+                        GestureDetector(
+                          onTap: () async {
+                            if (user == null) return;
+                            final picker = ImagePicker();
+                            final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                            if (pickedFile != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Uploading photo...')));
+                              final url = await ProfileService().uploadAvatar(user.uid, pickedFile);
+                              if (!context.mounted) return;
+                              if (url != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload successful!')));
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload failed. Please try again.')));
+                              }
+                            }
+                          },
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Container(
+                                width: 92,
+                                height: 92,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                                child: (user?.photoUrl != null && user!.photoUrl!.isNotEmpty)
+                                    ? Image.network(
+                                        user.photoUrl!,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                                        },
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Icon(PhosphorIcons.identificationBadge(), size: 52, color: Colors.white);
+                                        },
+                                      )
+                                    : Icon(PhosphorIcons.identificationBadge(), size: 52, color: Colors.white),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: AppColors.brandGreen,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(PhosphorIcons.camera(), size: 18, color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 14),
                         Text(name,

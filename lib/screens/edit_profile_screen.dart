@@ -27,6 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _saveChanges() async {
     final user = await AuthService().getCurrentUserData();
+    if (!mounted) return;
     if (user == null) return;
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -52,8 +53,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Edit Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.brandGreen,
@@ -82,15 +85,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.grey)),
+                          color: AppColors.dark)),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _nameController,
+                    style: TextStyle(color: AppColors.dark),
+                    cursorColor: AppColors.brandGreen,
                     decoration: InputDecoration(
                       hintText: 'Enter your full name',
+                      hintStyle: TextStyle(color: AppColors.grey),
                       prefixIcon: Icon(PhosphorIcons.user(), color: AppColors.brandGreen),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.transparent)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: AppColors.brandGreen, width: 1.5)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide.none),

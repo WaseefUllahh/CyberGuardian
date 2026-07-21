@@ -20,6 +20,13 @@ class _LearningScreenState extends State<LearningScreen> {
   String _searchQuery = '';
   String _selectedFilter = 'All';
   final List<String> _filters = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+  late Stream<LearningProgress?> _progressStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _progressStream = _learningService.getProgressStream();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,7 @@ class _LearningScreenState extends State<LearningScreen> {
       backgroundColor: bgColor,
       body: SafeArea(
         child: StreamBuilder<LearningProgress?>(
-          stream: _learningService.getProgressStream(),
+          stream: _progressStream,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());

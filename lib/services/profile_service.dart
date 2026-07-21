@@ -1,24 +1,29 @@
-import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:image_picker/image_picker.dart';
 
 class ProfileService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // Upload avatar image and return download URL
-  Future<String?> uploadAvatar(String uid, File imageFile) async {
+  Future<String?> uploadAvatar(String uid, XFile pickedFile) async {
     try {
-      final ref = _storage.ref().child('user_avatars').child('$uid.jpg');
-      final uploadTask = await ref.putFile(imageFile);
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final ref = _storage.ref().child('user_avatars').child('${uid}_$timestamp.jpg');
+      final bytes = await pickedFile.readAsBytes();
+      final metadata = SettableMetadata(contentType: pickedFile.mimeType ?? 'image/jpeg');
+      final uploadTask = await ref.putData(bytes, metadata);
       final url = await uploadTask.ref.getDownloadURL();
       await _db.collection('users').doc(uid).update({
-        'profileImage': url,
+        'photoUrl': url,
         'lastLogin': Timestamp.now(),
       });
       return url;
     } catch (e) {
+      print('Avatar upload error: $e');
       return null;
     }
   }
