@@ -43,3 +43,30 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ==============================================================================
+# Security & Private Configuration Files
+# ==============================================================================
+# Firebase config files
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
+**/macos/Runner/GoogleService-Info.plist
+firebase_options.dart
+
+# Environment variables
+.env
+.env.*
+
+# Key stores and signing
+*.keystore
+*.jks
+key.properties
+android/key.properties
+
+# ==============================================================================
+# OS specific
+# ==============================================================================
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
