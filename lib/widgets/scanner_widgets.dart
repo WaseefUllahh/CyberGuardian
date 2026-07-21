@@ -4,6 +4,8 @@ import '../utils/app_colors.dart';
 import '../models/virus_total_result.dart';
 import '../services/virus_total_service.dart';
 import '../services/url_scan_service.dart';
+import '../models/text_analysis_result.dart';
+import '../services/text_analysis_service.dart';
 
 // ── URL Scanner Panel ─────────────────────────────────────────────────────────
 
@@ -261,6 +263,123 @@ class _ScanResultCard extends StatelessWidget {
   }
 }
 
+// ── Text Analysis Result Card ──────────────────────────────────────────────────
+
+class _TextAnalysisResultCard extends StatelessWidget {
+  final TextAnalysisResult result;
+  const _TextAnalysisResultCard({required this.result});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    final Color bgColor;
+    final Color borderColor;
+    final Color iconColor;
+    final IconData icon;
+
+    if (result.isSafe) {
+      bgColor = isDark ? const Color(0xFF1A3B22) : const Color(0xFFE8F5E9);
+      borderColor = green;
+      iconColor = green;
+      icon = PhosphorIcons.shieldCheck();
+    } else {
+      bgColor = isDark ? const Color(0xFF3E1111) : const Color(0xFFFFEBEE);
+      borderColor = Colors.red;
+      iconColor = Colors.red;
+      icon = PhosphorIcons.shieldWarning();
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: borderColor.withValues(alpha: 0.6), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 26),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(result.threatLevel,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: iconColor)),
+                    const SizedBox(height: 3),
+                    Text(result.isSafe ? 'No phishing indicators found.' : 'High Risk (Score: ${result.riskScore}/100)',
+                        style: TextStyle(fontSize: 12, color: isDark ? Colors.white : dark)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          if (!result.isSafe) ...[
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 8),
+            
+            if (result.keywordMatches.isNotEmpty) ...[
+              Row(
+                children: [
+                  Icon(PhosphorIcons.warningCircle(), color: Colors.orange, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Suspicious Keywords: ${result.keywordMatches.join(', ')}',
+                        style: TextStyle(fontSize: 13, color: isDark ? Colors.grey.shade300 : Colors.grey.shade800)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+            
+            if (result.urlResults.isNotEmpty) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(PhosphorIcons.link(), color: Colors.blue, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: result.urlResults.entries.map((e) {
+                        final url = e.key;
+                        final vt = e.value;
+                        final isUrlSafe = vt.isSafe;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text('$url - ${isUrlSafe ? 'Safe' : 'Malicious'}',
+                              style: TextStyle(fontSize: 13, color: isUrlSafe ? green : Colors.red, fontWeight: FontWeight.bold)),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ]
+          ]
+        ],
+      ),
+    );
+  }
+}
+
 class SmsScannerPanel extends StatefulWidget {
   final TextEditingController controller;
   const SmsScannerPanel({super.key, required this.controller});
@@ -271,34 +390,18 @@ class SmsScannerPanel extends StatefulWidget {
 
 class _SmsScannerPanelState extends State<SmsScannerPanel> {
   bool _loading = false;
-  VirusTotalResult? _result;
+  TextAnalysisResult? _result;
 
   Future<void> _scanSms() async {
-    final text = widget.controller.text;
+    final text = widget.controller.text.trim();
     if (text.isEmpty) return;
-
-    // Extract first URL from text
-    final regex = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
-    final match = regex.firstMatch(text);
-    
-    if (match == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No URLs found in the SMS text.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    final url = match.group(0)!;
 
     setState(() {
       _loading = true;
       _result = null;
     });
 
-    final result = await VirusTotalService().scanUrl(url);
+    final result = await TextAnalysisService().analyzeText(text);
 
     if (mounted) {
       setState(() {
@@ -307,11 +410,16 @@ class _SmsScannerPanelState extends State<SmsScannerPanel> {
       });
     }
 
+    String snippet = text.replaceAll('\n', ' ');
+    if (snippet.length > 50) {
+      snippet = '${snippet.substring(0, 47)}...';
+    }
+
     await UrlScanService().saveScan(
-      url,
+      snippet,
       result.isSafe ? 'Safe' : 'Suspicious',
-      result.isSafe ? 'Clean' : result.threatLabel,
-      'VirusTotal'
+      result.threatLevel,
+      'SMS'
     );
   }
 
@@ -394,13 +502,14 @@ class _SmsScannerPanelState extends State<SmsScannerPanel> {
           ),
           if (_result != null) ...[
             const SizedBox(height: 16),
-            _ScanResultCard(result: _result!),
+            _TextAnalysisResultCard(result: _result!),
           ],
         ],
       ),
     );
   }
 }
+
 
 class EmailScannerPanel extends StatefulWidget {
   final TextEditingController controller;
@@ -412,34 +521,18 @@ class EmailScannerPanel extends StatefulWidget {
 
 class _EmailScannerPanelState extends State<EmailScannerPanel> {
   bool _loading = false;
-  VirusTotalResult? _result;
+  TextAnalysisResult? _result;
 
   Future<void> _scanEmail() async {
-    final text = widget.controller.text;
+    final text = widget.controller.text.trim();
     if (text.isEmpty) return;
-
-    // Extract first URL from text
-    final regex = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
-    final match = regex.firstMatch(text);
-    
-    if (match == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No URLs found in the Email text.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    final url = match.group(0)!;
 
     setState(() {
       _loading = true;
       _result = null;
     });
 
-    final result = await VirusTotalService().scanUrl(url);
+    final result = await TextAnalysisService().analyzeText(text);
 
     if (mounted) {
       setState(() {
@@ -448,11 +541,16 @@ class _EmailScannerPanelState extends State<EmailScannerPanel> {
       });
     }
 
+    String snippet = text.replaceAll('\n', ' ');
+    if (snippet.length > 50) {
+      snippet = '${snippet.substring(0, 47)}...';
+    }
+
     await UrlScanService().saveScan(
-      url,
+      snippet,
       result.isSafe ? 'Safe' : 'Suspicious',
-      result.isSafe ? 'Clean' : result.threatLabel,
-      'VirusTotal'
+      result.threatLevel,
+      'Email'
     );
   }
 
@@ -556,7 +654,7 @@ class _EmailScannerPanelState extends State<EmailScannerPanel> {
           ),
           if (_result != null) ...[
             const SizedBox(height: 16),
-            _ScanResultCard(result: _result!),
+            _TextAnalysisResultCard(result: _result!),
           ],
         ],
       ),
