@@ -447,6 +447,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 "Security is not a product, but a process." — Bruce Schneier
 ```
 
-**© 2024 CyberGuardian. All rights reserved.**
+**© 2026 CyberGuardian. All rights reserved.**
 
 </div>
