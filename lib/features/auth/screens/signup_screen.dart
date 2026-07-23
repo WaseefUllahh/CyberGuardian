@@ -46,8 +46,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    final error =
-        await AuthService().signUp(_name.text, _email.text, _password.text);
+    final error = await AuthService().signUp(
+      _name.text,
+      _email.text,
+      _password.text,
+    );
     if (error != null) {
       if (mounted) {
         setState(() => _loading = false);
@@ -88,9 +91,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 56,
                     filterQuality: FilterQuality.high,
                     errorBuilder: (c, e, s) => Icon(
-                        PhosphorIcons.shieldCheck(),
-                        color: AppColors.brandGreen,
-                        size: 56),
+                      PhosphorIcons.shieldCheck(),
+                      color: AppColors.brandGreen,
+                      size: 56,
+                    ),
                   ),
                 ),
               ),
@@ -111,8 +115,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SizedBox(height: 8),
           Text(
             'Join CyberGuardian today',
-            style:
-                TextStyle(color: subtitleColor, fontSize: 13, letterSpacing: 0.5),
+            style: TextStyle(
+              color: subtitleColor,
+              fontSize: 13,
+              letterSpacing: 0.5,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 48),
@@ -154,8 +161,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _password,
                   obscure: _obscurePass,
                   prefixIcon: PhosphorIcons.lock(),
-                  suffixIcon: passwordToggle(_obscurePass,
-                      () => setState(() => _obscurePass = !_obscurePass)),
+                  suffixIcon: passwordToggle(
+                    _obscurePass,
+                    () => setState(() => _obscurePass = !_obscurePass),
+                  ),
                   validator: (v) {
                     if (requiredValidator(v, 'password') != null) {
                       return requiredValidator(v, 'password');
@@ -169,8 +178,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (!v.contains(RegExp(r'[0-9]'))) {
                       return 'Add at least one number (0–9)';
                     }
-                    if (!v.contains(RegExp(
-                        r'[!@#\$%^\&*(),.?\":{}|<>_\-=+\[\]\\;~/`]'))) {
+                    if (!v.contains(
+                      RegExp(r'[!@#\$%^\&*(),.?\":{}|<>_\-=+\[\]\\;~/`]'),
+                    )) {
                       return r'Add at least one special character (!@#$%…)';
                     }
                     return null;
@@ -188,8 +198,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _confirm,
                   obscure: _obscureConfirm,
                   prefixIcon: PhosphorIcons.lockKey(),
-                  suffixIcon: passwordToggle(_obscureConfirm,
-                      () => setState(() => _obscureConfirm = !_obscureConfirm)),
+                  suffixIcon: passwordToggle(
+                    _obscureConfirm,
+                    () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  ),
                   validator: (v) {
                     if (requiredValidator(v, 'confirm password') != null) {
                       return requiredValidator(v, 'confirm password');
@@ -201,24 +213,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 32),
 
                 AuthButton(
-                    label: 'Sign Up',
-                    isLoading: _loading,
-                    onPressed: _submit),
+                  label: 'Sign Up',
+                  isLoading: _loading,
+                  onPressed: _submit,
+                ),
                 const SizedBox(height: 32),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have an account? ',
-                        style:
-                            TextStyle(color: subtitleColor, fontSize: 13)),
+                    Text(
+                      'Already have an account? ',
+                      style: TextStyle(color: subtitleColor, fontSize: 13),
+                    ),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Text('Log In',
-                          style: TextStyle(
-                              color: AppColors.brandGreen,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'Log In',
+                        style: TextStyle(
+                          color: AppColors.brandGreen,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -230,5 +247,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-
-
