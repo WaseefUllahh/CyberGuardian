@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_colors.dart';
 
@@ -27,3 +27,5 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+

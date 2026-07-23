@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LearningProgress {
   final String uid;
@@ -56,3 +56,5 @@ class LearningProgress {
   // Helper method to check if a course is completed
   bool isCourseCompleted(String courseId) => completedCourseIds.contains(courseId);
 }
+
+

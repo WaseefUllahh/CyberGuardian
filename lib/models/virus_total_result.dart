@@ -1,4 +1,4 @@
-class VirusTotalResult {
+﻿class VirusTotalResult {
   final bool isSafe;
   final bool isError;
   final String? errorMessage;
@@ -53,3 +53,5 @@ class VirusTotalResult {
         '${preview.isNotEmpty ? '\nFlagged by: $preview$extra' : ''}';
   }
 }
+
+

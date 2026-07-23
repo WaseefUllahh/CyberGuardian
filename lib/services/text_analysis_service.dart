@@ -1,4 +1,4 @@
-import 'virus_total_service.dart';
+﻿import 'virus_total_service.dart';
 import '../models/virus_total_result.dart';
 import '../models/text_analysis_result.dart';
 
@@ -57,12 +57,10 @@ class TextAnalysisService {
     
     // Analyze URL results
     bool anyMaliciousLink = false;
-    int maliciousLinksCount = 0;
     
     for (var result in urlResults.values) {
       if (!result.isSafe) {
         anyMaliciousLink = true;
-        maliciousLinksCount++;
         riskScore += 50; // Each malicious link adds 50 points
       }
     }
@@ -89,3 +87,6 @@ class TextAnalysisService {
     );
   }
 }
+
+
+

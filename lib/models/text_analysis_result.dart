@@ -1,4 +1,4 @@
-import 'virus_total_result.dart';
+﻿import 'virus_total_result.dart';
 
 class TextAnalysisResult {
   final bool isSafe;
@@ -41,3 +41,5 @@ class TextAnalysisResult {
     return parts.join('\n');
   }
 }
+
+

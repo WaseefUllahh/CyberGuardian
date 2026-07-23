@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 // Top-level color variables (if used)
 Color green = const Color(0xFF2E7D32);
@@ -44,3 +44,5 @@ extension CustomTextTheme on TextTheme {
   TextStyle get cardTitle => TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: AppColors.dark);
   TextStyle get cardSubtitle => TextStyle(fontSize: 12, color: AppColors.grey);
 }
+
+

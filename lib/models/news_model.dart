@@ -1,4 +1,4 @@
-class NewsModel {
+﻿class NewsModel {
   final String title;
   final String pubDate;
   final String link;
@@ -50,3 +50,5 @@ class NewsModel {
     );
   }
 }
+
+

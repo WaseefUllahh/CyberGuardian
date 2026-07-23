@@ -1,4 +1,4 @@
-import 'package:firebase_storage/firebase_storage.dart';
+﻿import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,7 +23,7 @@ class ProfileService {
       });
       return url;
     } catch (e) {
-      print('Avatar upload error: $e');
+      // print('Avatar upload error: $e');
       return null;
     }
   }
@@ -74,3 +74,6 @@ class ProfileService {
     return null;
   }
 }
+
+
+

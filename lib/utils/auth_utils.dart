@@ -1,5 +1,5 @@
-
-// ─── Validators ─────────────────────────────────────────────────────────────
+﻿
+// Validators
 
 String? requiredValidator(String? value, String field) =>
     (value == null || value.isEmpty) ? 'Enter your $field' : null;
@@ -15,3 +15,5 @@ String? passwordValidator(String? value) {
   if (value!.length < 6) return 'Minimum 6 characters';
   return null;
 }
+
+

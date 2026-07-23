@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/activity_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,3 +45,5 @@ class ActivityService {
             .toList());
   }
 }
+
+

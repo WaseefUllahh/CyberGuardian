@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../models/activity_model.dart';
 import '../models/scan_model.dart';
@@ -147,3 +147,5 @@ class AdminService {
       _db.collection('api_logs').snapshots().map((snapshot) =>
           snapshot.docs.map((doc) => doc.data()).toList());
 }
+
+

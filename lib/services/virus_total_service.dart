@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/virus_total_result.dart';
@@ -9,12 +9,12 @@ import '../models/virus_total_result.dart';
 ///   VirusTotalService().apiKey = 'YOUR_KEY';
 ///   final result = await VirusTotalService().scanUrl('https://example.com');
 class VirusTotalService {
-  // ── Singleton ──────────────────────────────────────────────────────────────
+  // Singleton
   static final VirusTotalService _instance = VirusTotalService._internal();
   factory VirusTotalService() => _instance;
   VirusTotalService._internal();
 
-  // ── State ──────────────────────────────────────────────────────────────────
+  // State
   String _apiKey = '669e34cea93aefaa722370ef8378bd4a4602ab71494723275f2d736019b57496';
 
   /// Whether an API key has been configured.
@@ -38,13 +38,13 @@ class VirusTotalService {
 
   String get apiKey => _apiKey;
 
-  // ── API Endpoint ───────────────────────────────────────────────────────────
+  // API Endpoint
   static const String _baseUrl = 'https://www.virustotal.com/api/v3/urls';
   
   /// A well-known malicious URL used for testing connection/detections (EICAR equivalent for web)
   static const String testMalwareUrl = 'http://www.eicar.org/download/eicar.com';
 
-  // ── Public Methods ─────────────────────────────────────────────────────────
+  // Public Methods
 
   /// Checks a single [url] against VirusTotal.
   Future<VirusTotalResult> scanUrl(String url) async {
@@ -171,3 +171,5 @@ class VirusTotalService {
   /// Convenience method to run a connection test.
   Future<VirusTotalResult> testConnection() => scanUrl(testMalwareUrl);
 }
+
+
