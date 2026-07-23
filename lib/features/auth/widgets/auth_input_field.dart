@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/brand_logo.dart';
 
 /// Shared auth input field used in [LoginScreen] and [SignUpScreen].
 ///
@@ -149,17 +150,7 @@ class AuthHeader extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            'assets/images/cyberguardian_logo.png',
-            width: 56,
-            height: 56,
-            filterQuality: FilterQuality.high,
-            errorBuilder: (c, e, s) => Icon(PhosphorIcons.shieldCheck(),
-                color: AppColors.brandGreen, size: 56),
-          ),
-        ),
+        const BrandLogo(size: 64),
         const SizedBox(height: 16),
         Text(title,
             style: TextStyle(

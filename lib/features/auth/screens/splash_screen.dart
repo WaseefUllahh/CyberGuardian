@@ -1,13 +1,17 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../services/auth_service.dart';
+import '../../onboarding/services/onboarding_service.dart';
+import '../../../shared/widgets/brand_logo.dart';
 
 /// Initial screen shown while the app checks Firebase authentication state.
 ///
-/// Navigates to [LoginScreen] if no user is signed in,
-/// or directly to [MainNavigationScreen] / [AdminPanelScreen] if already logged in.
+/// Navigation priority:
+///   1. Already logged-in user   → Home or Admin (skip onboarding entirely)
+///   2. First-ever launch        → Onboarding tutorial
+///   3. Returning guest          → Login screen
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -28,35 +32,36 @@ class _SplashScreenState extends State<SplashScreen> {
 
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      // Logged-in user → go straight to the app shell
       final userModel = await AuthService().getCurrentUserData();
       final bool isAdmin = userModel?.role == 'admin';
       if (mounted) {
         Navigator.pushReplacementNamed(context, isAdmin ? '/admin' : '/home');
       }
     } else {
+      // Not logged in — check if this is the very first launch
+      final seenOnboarding = await OnboardingService().hasSeenOnboarding();
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(
+          context,
+          seenOnboarding ? '/login' : '/onboarding',
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Image.asset(
-                'assets/images/cyberguardian_logo.png',
-                width: 200,
-                height: 200,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
+            // Premium logo: circular gradient bg + glow shadow
+            const BrandLogo(size: 200),
             const SizedBox(height: 16),
             Text(
               'CyberGuardian',
@@ -80,5 +85,6 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
 
 

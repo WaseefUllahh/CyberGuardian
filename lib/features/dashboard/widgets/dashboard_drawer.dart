@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/brand_logo.dart';
 import '../../../utils/user_store.dart';
 import '../../../services/auth_service.dart';
 
@@ -41,6 +42,9 @@ class DashboardDrawer extends StatelessWidget {
                       'assets/images/cyberguardian_logo.png',
                       width: 220,
                       height: 220,
+                      // Tint watermark to brand green so it blends with the theme
+                      color: const Color(0xFF2E7D32),
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                   ),
                 ),
@@ -62,14 +66,10 @@ class DashboardDrawer extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.asset(
-                            'assets/images/cyberguardian_logo.png',
-                            width: 72,
-                            height: 72,
-                            filterQuality: FilterQuality.high,
-                          ),
+                        // onGreen style: semi-transparent white circle on green gradient
+                        const BrandLogo(
+                          size: 72,
+                          style: BrandLogoStyle.onGreen,
                         ),
                         const SizedBox(height: 14),
                         Text(name,
@@ -99,6 +99,9 @@ class DashboardDrawer extends StatelessWidget {
                                   height: 24,
                                   width: 24,
                                   filterQuality: FilterQuality.high,
+                                  // White tint: badge sits on green gradient
+                                  color: Colors.white,
+                                  colorBlendMode: BlendMode.srcIn,
                                 ),
                               ),
                               const SizedBox(width: 8),

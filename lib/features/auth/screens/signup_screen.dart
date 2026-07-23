@@ -5,6 +5,7 @@ import '../../../utils/auth_utils.dart';
 import '../../../services/auth_service.dart';
 import '../widgets/auth_input_field.dart';
 import '../../profile/widgets/password_strength_widget.dart';
+import '../../../shared/widgets/brand_logo.dart';
 
 /// Sign-up screen — creates a new CyberGuardian account via [AuthService].
 ///
@@ -80,24 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(color: Colors.transparent),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.asset(
-                    'assets/images/cyberguardian_logo.png',
-                    width: 56,
-                    height: 56,
-                    filterQuality: FilterQuality.high,
-                    errorBuilder: (c, e, s) => Icon(
-                      PhosphorIcons.shieldCheck(),
-                      color: AppColors.brandGreen,
-                      size: 56,
-                    ),
-                  ),
-                ),
-              ),
+              const BrandLogo(size: 72),
             ],
           ),
           const SizedBox(height: 32),

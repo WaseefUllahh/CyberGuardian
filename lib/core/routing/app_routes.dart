@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 // Feature imports — each features/ sub-folder contains its own screens.
 // Update this file when adding new screens/routes.
@@ -7,6 +7,9 @@
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/signup_screen.dart';
+
+// Onboarding
+import '../../features/onboarding/screens/onboarding_screen.dart';
 
 // Dashboard / Navigation shell
 import '../../features/dashboard/screens/main_navigation_screen.dart';
@@ -39,6 +42,7 @@ import '../../features/admin/screens/admin_panel_screen.dart';
 class AppRoutes {
   // Route name constants
   static const String splash          = '/';
+  static const String onboarding      = '/onboarding';
   static const String login           = '/login';
   static const String signup          = '/signup';
   static const String home            = '/home';
@@ -59,6 +63,7 @@ class AppRoutes {
   // Route map
   static Map<String, WidgetBuilder> get routes => {
     splash:         (_) => const SplashScreen(),
+    onboarding:     (_) => const OnboardingScreen(),
     login:          (_) => const LoginScreen(),
     signup:         (_) => const SignUpScreen(),
     home:           (_) => const MainNavigationScreen(),

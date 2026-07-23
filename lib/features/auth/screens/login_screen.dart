@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../utils/auth_utils.dart';
 import '../../../services/auth_service.dart';
 import '../widgets/auth_input_field.dart';
+import '../../../shared/widgets/brand_logo.dart';
 
 /// Login screen — authenticates an existing user via [AuthService].
 ///
@@ -68,23 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: const BoxDecoration(color: Colors.transparent),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.asset(
-                    'assets/images/cyberguardian_logo.png',
-                    width: 120,
-                    height: 120,
-                    filterQuality: FilterQuality.high,
-                    errorBuilder: (c, e, s) => Icon(
-                        PhosphorIcons.shieldCheck(),
-                        color: AppColors.brandGreen,
-                        size: 120),
-                  ),
-                ),
-              ),
+              const BrandLogo(size: 120),
             ],
           ),
           const SizedBox(height: 8),
