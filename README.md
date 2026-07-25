@@ -90,6 +90,7 @@
 
 ### 🔐 Secure Authentication
 - Firebase Email/Password authentication
+- **Biometric Authentication** (Fingerprint/Face ID)
 - **Two-Factor Authentication (2FA)** screen
 - Role-based access control (User vs. Admin)
 - Persistent sessions with secure logout
@@ -163,7 +164,7 @@ lib/
 |-------|-----------|---------|
 | **Framework** | Flutter 3.x (Dart 3.x) | Cross-platform UI |
 | **State Management** | Provider | Reactive state across widgets |
-| **Authentication** | Firebase Auth | Secure user login/registration |
+| **Authentication** | Firebase Auth, local_auth | Secure user login, 2FA, & biometrics |
 | **Database** | Cloud Firestore | Real-time NoSQL data storage |
 | **File Storage** | Firebase Storage | Avatar and document uploads |
 | **Threat Intelligence** | VirusTotal API v3 | 70+ AV engine URL scanning |
@@ -186,6 +187,9 @@ dependencies:
   # State & Persistence
   provider: ^6.1.2
   shared_preferences: ^2.5.5
+
+  # Device & Hardware
+  local_auth: ^2.2.0
 
   # Firebase Suite
   firebase_core: ^3.6.0
@@ -308,40 +312,24 @@ flutter_application_1/
 │   │   ├── activity_service.dart        # User activity log
 │   │   └── firestore_service.dart       # Low-level Firestore helpers
 │   │
-│   ├── screens/                         # Presentation layer (24 screens)
-│   │   ├── splash_screen.dart           # Animated launch screen
-│   │   ├── login_screen.dart            # Firebase login form
-│   │   ├── signup_screen.dart           # Registration with validation
-│   │   ├── main_navigation_screen.dart  # Bottom navigation host
-│   │   ├── dashboard_screen.dart        # Security score + quick actions
-│   │   ├── scanner_screen.dart          # URL/SMS/Email/Password scanner
-│   │   ├── scan_history_screen.dart     # Paginated scan history log
-│   │   ├── learning_screen.dart         # Course catalog with filters
-│   │   ├── course_detail_screen.dart    # Lesson list + video + quiz
-│   │   ├── lesson_screen.dart           # Individual lesson content
-│   │   ├── quiz_screen.dart             # Interactive MCQ quiz
-│   │   ├── news_screen.dart             # Live cybersecurity news feed
-│   │   ├── reports_screen.dart          # Tabbed reports dashboard
-│   │   ├── submit_report_screen.dart    # Community scam report form
-│   │   ├── profile_screen.dart          # Full user profile
-│   │   ├── edit_profile_screen.dart     # Profile editing
-│   │   ├── change_password_screen.dart  # Password update flow
-│   │   ├── two_factor_screen.dart       # 2FA configuration
-│   │   ├── admin_panel_screen.dart      # Full admin control panel
-│   │   ├── notification_settings_screen.dart
-│   │   ├── language_settings_screen.dart
-│   │   ├── help_center_screen.dart
-│   │   ├── about_screen.dart
-│   │   └── privacy_policy_screen.dart
+│   ├── core/                            # App-wide foundational code
+│   │   ├── constants/                   # Global constants and configs
+│   │   ├── routing/                     # Route definitions & navigation logic
+│   │   └── theme/                       # Light/Dark mode themes
 │   │
-│   ├── widgets/                         # Reusable UI components
-│   │   ├── admin/                       # 15 dedicated admin panel views
-│   │   ├── dashboard_widgets.dart       # Hero cards, stat boxes, action tiles
-│   │   ├── scanner_widgets.dart         # Scan panels per type
-│   │   ├── learning_ui_widgets.dart     # Course cards, progress rings
-│   │   ├── report_widgets.dart          # Report cards and filters
-│   │   ├── dashboard_drawer.dart        # Side navigation drawer
-│   │   └── premium_icon.dart            # Custom icon with glow effect
+│   ├── features/                        # Feature-based modular UI architecture
+│   │   ├── admin/                       # Admin dashboard views
+│   │   ├── auth/                        # Login, registration, 2FA, & biometrics
+│   │   ├── dashboard/                   # Main user dashboard and metrics
+│   │   ├── learning/                    # Courses, lessons, quizzes
+│   │   ├── news/                        # Live security news feed
+│   │   ├── onboarding/                  # Welcome & setup flows
+│   │   ├── profile/                     # User settings & profile management
+│   │   ├── reports/                     # Scam & threat reporting system
+│   │   └── scanner/                     # URL/SMS/Email/Password scanning UI
+│   │
+│   ├── shared/                          # Reusable cross-feature components
+│   │   └── widgets/                     # Common UI elements & custom icons
 │   │
 │   ├── data/
 │   │   └── learning_content.dart        # Static cybersecurity curriculum
